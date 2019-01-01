@@ -10,7 +10,7 @@
 <div class='container bg-white'>
     <h1>{{ post.title }}</h1>
     <p>
-        <span class="fas fa-time"></span> {{post.date|date:"D d M Y"}} &nbsp;
+        <span class="fas fa-calendar-alt"></span> {{post.date|date:"D d M Y"}} &nbsp;
         <span class="fas fa-user"></span> {{post.owner}} &nbsp;
 
     </p>
@@ -32,8 +32,8 @@
     {% endif %}
     {% endwith %}
     
-    {% comment %} {% show_comments %} {% endcomment %}
-    {# <p><a href="{{ page.get_parent.url }}">Return to blog</a></p> #}
+    <p><a href="/blog">Return to blog</a></p>
+    {% show_comments %}
 </div>
 {% endblock %}
 

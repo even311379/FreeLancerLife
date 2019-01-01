@@ -34,10 +34,12 @@ from wagtailmd.utils import MarkdownField, MarkdownPanel
 # Create your models here.
 class BlogIndex(RoutablePageMixin, Page):
 
+    title_caption = models.CharField(max_length=250,blank=True,)
     description = models.CharField(max_length=255, blank=True,)
 
     content_panels = Page.content_panels + [
-        FieldPanel('description', classname="full")
+        FieldPanel('title_caption'),
+        FieldPanel('description')
     ]
 
     '''
@@ -53,50 +55,37 @@ class BlogIndex(RoutablePageMixin, Page):
 
 
     def get_context(self, request, *args, **kwargs):
-        print('secrets in get_context')
+        print('main get_context is called!')
         context = super().get_context(request, *args, **kwargs)
+        if request.method == 'POST':
+            self.posts_this_page = []
+            all_post = self.get_posts()
+            cats = []
+            for cat in BlogCategory.objects.all():
+                if request.POST.get(cat.name):
+                    cats.append(cat.name)        
+            for post in all_post:
+                for c in post.categories.all():
+                    if c.name in cats:
+                        self.posts_this_page.append(post)
+                        break
+                        
         context['posts_this_page'] = self.posts_this_page
-        # if self.p:
         context['p'] = self.p
         context['blog_index'] = self
 
-        context['search_type'] = getattr(self, 'search_type', "")
-        context['search_term'] = getattr(self, 'search_term', "")
-
         context['categories'] = BlogCategory.objects.all()
-        if len(BlogCategory.objects.all()) % 2 == 1:
-            context['n_category_odd'] = True
+        # if len(BlogCategory.objects.all()) % 3 == 1:
+        context['n_category_left'] = len(BlogCategory.objects.all()) % 3
 
         return context
 
-    @route(r'^$')
-    def post_list(self, request, *args, **kwargs):
-        '''
-        pagination for posts
-        '''
-        print('secrets in postlist')
-        all_post = self.get_recent_posts(999)
-        paginator = Paginator(all_post, 2)
-        p = request.GET.get('p')
-        if not p:
-            p = 1
-        try:
-            posts_this_page = paginator.page(p)
-        except PageNotAnInteger:
-            p = 1
-            posts_this_page = paginator.page(p)
-        except EmptyPage:
-            p = paginator.num_pages
-            posts_this_page = paginator.page(p)
-
-        self.posts_this_page = posts_this_page
-        self.p = p
-        return Page.serve(self, request, *args, **kwargs)
+   
 
     def get_posts(self):
         all_post = []
-        all_post += PostPage.objects.descendant_of(self).live()
-        all_post += LandingPage.objects.descendant_of(self).live()
+        all_post += PostPage.objects.live()
+        all_post += LandingPage.objects.live()
 
         return all_post
 
@@ -116,23 +105,17 @@ class BlogIndex(RoutablePageMixin, Page):
                     break
         return reordered_all_post[0:10]
 
-
-
-    @route(r'^category/(?P<category>[-\w]+)/$')
+    # @route(r'^category/(?P<category>[-\w]+)/$')
+    @route(r'^category$')
     def post_by_category(self, request, category, *args, **kwargs):
-        self.search_type = 'category'
-        self.search_term = category
-        print(category)
-        for p in self.get_recent_posts(50):
-            print([i.slug for i in p.categories.all()])
-            print(category in [i.slug for i in p.categories.all()])
-        print([post for post in self.get_recent_posts(50) if category in [c.slug for c in post.categories.all()]])
+        print('route post_by_category is called!!')
         self.posts_this_page = [post for post in self.get_recent_posts(50) if category in [c.slug for c in post.categories.all()]]
         return Page.serve(self, request, *args, **kwargs)
 
 
-    @route(r'^search/$')
-    def post_search(self,request, *args, **kwargs):
+    @route(r'^search_post/(?P<query>)$')
+    def post_search(self,request, query, *args, **kwargs):
+        print('route post_search is called!!')
         search_query = request.GET.get('q', None)
         self.posts = self.get_posts()
         if search_query:
@@ -140,11 +123,32 @@ class BlogIndex(RoutablePageMixin, Page):
             self.search_term = search_query
             self.search_type = 'search'
         return Page.serve(self, request, *args, **kwargs)
+    
+    @route(r'^$')
+    def post_list(self, request, *args, **kwargs):
+        '''
+        pagination for posts
+        '''
+        print('route post list is called!!')
+        all_post = self.get_recent_posts(999)
+        paginator = Paginator(all_post, 10)
+        p = request.GET.get('p')
+        if not p:
+            p = 1
+        try:
+            posts_this_page = paginator.page(p)
+        except PageNotAnInteger:
+            p = 1
+            posts_this_page = paginator.page(p)
+        except EmptyPage:
+            p = paginator.num_pages
+            posts_this_page = paginator.page(p)
 
-'''
-I should use a new page class to present search by category results,
-since the templates will differ a lot than blog index
-'''    
+        self.posts_this_page = posts_this_page
+        self.p = p
+        return Page.serve(self, request, *args, **kwargs)
+
+  
 
 class PostPage(Page):
     date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)

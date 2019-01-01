@@ -4,15 +4,36 @@
 {% block title %}{{ self.title }} | {{ blog_page.title }}{% endblock title %}
 {% block meta_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock meta_title %}
 {% block meta_description %}{% if self.search_description %}{{ self.search_description }}{% else %}{{ self.body|striptags|truncatewords:20 }}{% endif %}{% endblock meta_description %}
-
+{% comment %} {% block extra_css %}
+<style>
+.callout h2 {
+    font-size: 5.5rem;
+}
+</style>
+{% endblock %} {% endcomment %}
+{% block body_class%}bg-light{% endblock %}
 {% block content %}
+<section class="callout">
+    <div class="container text-center">
+       <h2 class="mx-auto md-5">{{ page.title }}</h2>
+        <em>
+            <span class="fas fa-calendar-alt"></span> {{ page.date|date:"D d M Y" }} &nbsp;
+            <span class="fas fa-user"></span> {{ page.owner}} &nbsp;
+        </em>
+        
+        {% with categories=page.categories.all %}
+        {% if categories %}
+            <div class='row justify-content-sm-center' style='padding-top:2vh'>
+                {% for category in categories %}
+                <div class='col-sm-auto'>
+                <a class='btn btn-primary' href='/blog/category/{{ category.slug }}' role="button">{{ category.name }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}{% endwith %}
+</section>
 
-<h1>{{ page.title }}</h1>
-    <p>
-        <span class="fas fa-time"></span> {{ page.date|date:"D d M Y" }} &nbsp;
-        <span class="fas fa-user"></span> {{ page.owner}} &nbsp;
-
-    </p>
+{% comment %} create buttons for each categories: {% endcomment %}
 {% with categories=page.categories.all %}
     {% if categories %}
         <h3>Categories</h3>
@@ -24,8 +45,8 @@
             {% endfor %}
         </ul>
     {% endif %}
-    {% endwith %}
-
+{% endwith %}
+<div class='container'>
 {% with blocks=self.body %}
 
     {% for block in blocks %}
@@ -39,5 +60,9 @@
     {% endfor %}
 
 {% endwith %}
+
+<p><a href="/blog">Return to blog</a></p>
+{% show_comments %}
+</div>
 
 {% endblock %}
