@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% load wagtailcore_tags wagtailimages_tags blogapp_tags wagtailroutablepage_tags  %}
+{% load menu_tags %}
+
+{% block extra_css %}
+<style>
+.form-group input[type="checkbox"] {
+    display: none;
+}
+.form-group input[type="checkbox"] + .btn-group > label span {
+    width: 20px;
+}
+.form-group input[type="checkbox"] + .btn-group > label span:first-child {
+    display: none;
+}
+.form-group input[type="checkbox"] + .btn-group > label span:last-child {
+    display: inline-block;   
+}
+
+.form-group input[type="checkbox"]:checked + .btn-group > label span:first-child {
+    display: inline-block;
+}
+.form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
+    display: none;   
+}
+
+.content-section {
+
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+
+}
+</style>
+{% endblock %}
+{% comment %} {% block sidebar_items %}
+<li class="nav-item">
+    <form role="search" method="get" class="form-search" action="{% routablepageurl blog_page "post_search" %}" method="get">
+        <div class="input-group">
+            <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for:" />
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-default" id="searchsubmit">
+                <i class="fas fa-search"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+</li>
+<li class="nav-item">
+    <a class="nav-link pl-0" href="#">Link</a>
+</li>
+
+{% main_menu template="menu/b4_menu.html" %}
+
+
+{% endblock %} {% endcomment %}
+
+{% block content %}
+    <section class="callout" id='blog_index_banner'>
+        <div class="container text-center">
+            <h2 class="mx-auto mb-5">{{ blog_index.title }}</h2>
+            <a class="btn btn-primary btn-xl" href="https://startbootstrap.com/template-overviews/stylish-portfolio/">Download Now!</a>
+        </div>
+        </section>
+
+    <section class='' id='recent_post'>
+    <h1>  最新貼文  </h1>
+    ... should add next few page buttons
+    {% if p %}
+    <h3>this is page {{ p }}</h3>
+    {% endif %}
+    {% for post in posts_this_page %}
+    <h3><a href="{{ post.slug }}">{{ post.title }}</a></h3>
+    <p>
+        <span class="fas fa-clock"></span> {{post.date|date:"D d M Y"}} &nbsp;
+        <span class="fas fa-user"></span> {{post.owner}} &nbsp;
+    </p>
+    <hr>
+    
+    {% endfor %}
+    </section>
+    
+
+    
+    {% comment %} {% for post in posts %}
+        {% if post.header_image %}
+            {% image post.header_image original as header_image %}
+            <img src="{{ header_image.url }}" class="img-responsive" ></img>
+        {% endif %}
+        <h2>
+            <a href="{% post_date_url post blog_page %}">{{ post.title }}</a>
+        </h2>
+        <p>
+            <span class="glyphicon glyphicon-time"></span>
+            Posted on {{post.date}} by {{post.owner}}
+        </p>
+        <hr>
+        {% if post.excerpt %}
+            {{ post.excerpt|richtext }}
+        {% else %}
+            {{ post.body|richtext|truncatewords_html:40 }}
+        {% endif %}
+        <a class="btn btn-primary" href="{% post_date_url post blog_page %}">
+        Read More <span class="glyphicon glyphicon-chevron-right"></span>
+        </a>
+        <hr>
+    {% endfor %} {% endcomment %}
+
+<section class="content-section bg-light">
+<div class='container' align='center'>
+<h3>以類別收尋po文：</h3>
+<form action='/category' method='POST'>
+    {% csrf_token %}
+
+{% for category in categories %}
+    {% if forloop.counter0|divisibleby:2 %}
+    <div class='row'>
+    {% endif %}
+    <div class='col-sm-6'>
+        <div class="form-group">
+            <input type="checkbox" name="checkbox-{{ category.name }}" id="checkbox-{{ category.name }}" autocomplete="off" />
+            <div class="btn-group">
+                <label for="checkbox-{{ category.name }}" class="btn btn-primary">
+                    <span class="fas fa-check"></span>
+                    <span> </span>
+                </label>
+                <label for="checkbox-{{ category.name }}" class="btn btn-default active" style="width: 120px">
+                    {{ category.name }}
+                </label>
+            </div>
+        </div>
+    </div>
+    {% if forloop.counter0|divisibleby:2 %}
+    {% else %}
+    </div>
+    {% endif %}
+{% endfor %}
+{% if n_category_odd %}
+</div>
+{% endif %}
+<input type='submit' class='btn btn-success' value='查詢'>
+</div>
+</form>
+</section>
+{% endblock %}

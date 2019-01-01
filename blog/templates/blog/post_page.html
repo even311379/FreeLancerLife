@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static wagtailroutablepage_tags wagtailimages_tags blogapp_tags wagtailmd%}
+
+{% block extra_css %}
+<link href="{% static '/blog/css/autumn.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_class%}bg-light{% endblock %}
+{% block content %}
+<div class='container bg-white'>
+    <h1>{{ post.title }}</h1>
+    <p>
+        <span class="fas fa-time"></span> {{post.date|date:"D d M Y"}} &nbsp;
+        <span class="fas fa-user"></span> {{post.owner}} &nbsp;
+
+    </p>
+    <hr>
+    {{ post.body|markdown|safe }}
+    <hr>
+    <p><a href="{{ page.get_parent.url }}">Return to blog</a></p>
+
+    {% with categories=page.categories.all %}
+    {% if categories %}
+        <h3>Categories</h3>
+        <ul>
+            {% for category in categories %}
+                <li style="display: inline">
+                    {{ category.name }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+    
+    {% comment %} {% show_comments %} {% endcomment %}
+    {# <p><a href="{{ page.get_parent.url }}">Return to blog</a></p> #}
+</div>
+{% endblock %}
+
+{% block extra_js%}
+<script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              extensions: ["tex2jax.js"],
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [['$','$']],
+                displayMath: [['$$','$$']] ,
+                processEscapes: true
+              },
+              "HTML-CSS": { availableFonts: ["TeX"] }
+            });
+          </script>
+          
+          <script type="text/javascript"
+             src="https://cdn.mathjax.org/mathjax/latest/MathJax.js">
+          </script>
+{% endblock %}
