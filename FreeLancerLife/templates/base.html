@@ -37,6 +37,7 @@
         <!-- Custom CSS -->
         <link href="{% static 'css/stylish-portfolio.css' %}" rel="stylesheet">
         {% comment %} <link href="{% static '/css/codehilite_autumn.css' %}" rel="stylesheet"> {% endcomment %}
+
         {% block extra_css %}
 
         {% endblock %}
@@ -69,7 +70,7 @@
                 <a class="js-scroll-trigger" href="#contact">Contact</a>
             </li>
             <li class="sidebar-nav-item" style="padding:15px">
-                <form method="get" class="form-search" action="/search_post" method="get">
+                <form method="get" class="form-search" action="http://127.0.0.1:8000/blog/search_post" method="get">
                     <div class="input-group">
                         <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for post:" />
                         <span class="input-group-btn">

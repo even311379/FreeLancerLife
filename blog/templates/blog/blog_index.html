@@ -25,30 +25,17 @@
 .form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
     display: none;   
 }
-
+{% image page.banner max-1900x1268 as my_banner  %}
+.callout {
+  padding: 15rem 0;
+  background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.1)), to(rgba(255, 255, 255, 0.1))), url("{{ my_banner.url }}");
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url("{{ my_banner.url }}");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 </style>
 {% endblock %}
-{% comment %} {% block sidebar_items %}
-<li class="nav-item">
-    <form role="search" method="get" class="form-search" action="{% routablepageurl blog_page "post_search" %}" method="get">
-        <div class="input-group">
-            <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for:" />
-            <span class="input-group-btn">
-                <button type="submit" class="btn btn-default" id="searchsubmit">
-                <i class="fas fa-search"></i>
-                </button>
-            </span>
-        </div>
-    </form>
-</li>
-<li class="nav-item">
-    <a class="nav-link pl-0" href="#">Link</a>
-</li>
-
-{% main_menu template="menu/b4_menu.html" %}
-
-
-{% endblock %} {% endcomment %}
 
 {% block content %}
     <section class="callout">
@@ -62,12 +49,23 @@
 
     <section class='' id='posts_region'>
     <div class='container'>
-    <h1>  最新貼文  </h1>
-    ... should add next few page buttons
-    {% if p %}
-    <h3>this is page {{ p }}</h3>
+    {% if present_method == 0 %}
+        ... should add next few page buttons pagination
+        {% comment %} {% if p %}
+        <h3>this is page {{ p }}</h3>
+        {% endif %} {% endcomment %}
     {% endif %}
-
+    <h2>  {{ help_text }}  </h2>
+    {% if present_method == 1 %}
+        {% for cat in searched_categories %}
+            <a href="http://127.0.0.1:8000/blog/category/{{ cat.slug }}" class='badge badge-info badge-pill' >{{ cat.name }}</a>
+        {% endfor %}
+        <br><br>
+    {% endif %}
+    {% if present_method == 2 %}
+    {{ keyword }}
+    {% endif %}
+    {% if posts_this_page %}
         <div class="list-group">
             {% for post in posts_this_page %}
             <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="/blog/{{ post.slug }}">
@@ -83,41 +81,18 @@
             </a>
             {% endfor %}
         </div>
+    {% else %}
+    <div class="mx-auto" style="text-align: center;">
+        <h4>No results!</h4>
+    </div>
 
+    {% endif %}
     </section>
     <br>
 
-    {% comment %} <p>
-        <span class="fas fa-calendar-alt"></span> {{post.date|date:"D d M Y"}} &nbsp;
-        <span class="fas fa-user"></span> {{post.owner}} &nbsp;
-    </p> {% endcomment %}
-    
-    {% comment %} {% for post in posts %}
-        {% if post.header_image %}
-            {% image post.header_image original as header_image %}
-            <img src="{{ header_image.url }}" class="img-responsive" ></img>
-        {% endif %}
-        <h2>
-            <a href="{% post_date_url post blog_page %}">{{ post.title }}</a>
-        </h2>
-        <p>
-            <span class="glyphicon glyphicon-time"></span>
-            Posted on {{post.date}} by {{post.owner}}
-        </p>
-        <hr>
-        {% if post.excerpt %}
-            {{ post.excerpt|richtext }}
-        {% else %}
-            {{ post.body|richtext|truncatewords_html:40 }}
-        {% endif %}
-        <a class="btn btn-primary" href="{% post_date_url post blog_page %}">
-        Read More <span class="glyphicon glyphicon-chevron-right"></span>
-        </a>
-        <hr>
-    {% endfor %} {% endcomment %}
 
 <section class="">
-<div class='container bg-light' align='center' style="padding-top:5rem;padding-bottom:5rem">
+<div class='container bg-light' align='center' style="padding-top:3rem;padding-bottom:3rem">
 <h3>以類別搜尋po文：</h3>
 <br>
 <form action='http://127.0.0.1:8000/blog/category/' method='POST'>

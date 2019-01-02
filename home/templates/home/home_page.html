@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% load static wagtailcore_tags wagtailimages_tags %}
+{% block extra_css %}
+        {% image page.banner max-1900x1268 as my_banner  %}
+        <style>
+         .masthead {
+          background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.1)), to(rgba(255, 255, 255, 0.1))), url("{{ my_banner.url }}");
+          background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url("{{ my_banner.url }}");
+          background-position: center center;
+          background-repeat: no-repeat;
+          background-size: cover;
+        } 
+        </style>
+{% endblock %}
+
 {% block body_class %}template-homepage{% endblock %}
 
 {% block content %}

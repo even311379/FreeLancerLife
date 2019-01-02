@@ -9,14 +9,14 @@ from blog import models as blog_model
 class HomePage(Page):
     title_caption = models.CharField(max_length=250,blank=True)
     intro = RichTextField(blank=True)
+    banner = models.ForeignKey(
+        'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+',null=True,blank=True,
+    )
 
     about_caption = models.CharField(max_length=250,blank=True)
     about_content = RichTextField(blank=True)
 
     data_title = models.CharField(max_length=50,blank=True)
-    # data_icon = models.ForeignKey(
-    #     'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+',null=True
-    # )
     data_content = RichTextField(blank=True)
 
     web_title = models.CharField(max_length=50,blank=True)
@@ -32,6 +32,7 @@ class HomePage(Page):
         MultiFieldPanel([
             FieldPanel('title_caption'),
             FieldPanel('intro'),
+            ImageChooserPanel('banner'),
         ], heading="Title"),
         MultiFieldPanel([
             FieldPanel('about_caption'),

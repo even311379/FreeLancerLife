@@ -36,10 +36,13 @@ class BlogIndex(RoutablePageMixin, Page):
 
     title_caption = models.CharField(max_length=250,blank=True,)
     description = models.CharField(max_length=255, blank=True,)
-
+    banner = models.ForeignKey(
+        'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+',null=True,blank=True,
+    )
     content_panels = Page.content_panels + [
         FieldPanel('title_caption'),
-        FieldPanel('description')
+        FieldPanel('description'),
+        ImageChooserPanel('banner'),
     ]
 
     '''
@@ -52,18 +55,25 @@ class BlogIndex(RoutablePageMixin, Page):
     '''
     posts_this_page = []
     p = []
-
+    help_text = ''
+    present_method = 0 # 0 for recent posts, 1 for categories, 2 for title keyword search
+    searched_categories = []
+    keyword = ''
 
     def get_context(self, request, *args, **kwargs):
         print('main get_context is called!')
         context = super().get_context(request, *args, **kwargs)
         if request.method == 'POST':
+            self.help_text = '分類搜索：'
+            self.present_method = 1
             self.posts_this_page = []
             all_post = self.get_posts()
             cats = []
             for cat in BlogCategory.objects.all():
                 if request.POST.get(cat.name):
-                    cats.append(cat.name)        
+                    cats.append(cat.name)
+            
+            self.searched_categories = BlogCategory.objects.filter(name__in=cats)        
             for post in all_post:
                 for c in post.categories.all():
                     if c.name in cats:
@@ -73,20 +83,20 @@ class BlogIndex(RoutablePageMixin, Page):
         context['posts_this_page'] = self.posts_this_page
         context['p'] = self.p
         context['blog_index'] = self
-
+        context['help_text'] = self.help_text
+        context['present_method'] = self.present_method
+        context['searched_categories'] = self.searched_categories
+        context['keyword'] = self.keyword
         context['categories'] = BlogCategory.objects.all()
-        # if len(BlogCategory.objects.all()) % 3 == 1:
         context['n_category_left'] = len(BlogCategory.objects.all()) % 3
 
         return context
 
    
-
     def get_posts(self):
         all_post = []
         all_post += PostPage.objects.live()
         all_post += LandingPage.objects.live()
-
         return all_post
 
     def get_recent_posts(self, n = 10):
@@ -105,23 +115,27 @@ class BlogIndex(RoutablePageMixin, Page):
                     break
         return reordered_all_post[0:10]
 
-    # @route(r'^category/(?P<category>[-\w]+)/$')
-    @route(r'^category$')
+    @route(r'^category/(?P<category>[-\w]+)/$')
+    # @route(r'^category$')
     def post_by_category(self, request, category, *args, **kwargs):
         print('route post_by_category is called!!')
+        self.help_text = '分類搜索：'
+        self.present_method = 1
+        self.searched_categories = BlogCategory.objects.filter(slug=category)
         self.posts_this_page = [post for post in self.get_recent_posts(50) if category in [c.slug for c in post.categories.all()]]
         return Page.serve(self, request, *args, **kwargs)
 
 
-    @route(r'^search_post/(?P<query>)$')
-    def post_search(self,request, query, *args, **kwargs):
+    @route(r'^search_post/$')
+    def post_search(self,request, *args, **kwargs):
         print('route post_search is called!!')
+        self.help_text = '關鍵字搜索：'
+        self.present_method = 2
         search_query = request.GET.get('q', None)
-        self.posts = self.get_posts()
+        self.keyword = search_query
+        all_posts = self.get_posts()
         if search_query:
-            self.posts = self.posts.filter(body__contains=search_query)
-            self.search_term = search_query
-            self.search_type = 'search'
+            self.posts_this_page = [p for p in all_posts if search_query in p.title]
         return Page.serve(self, request, *args, **kwargs)
     
     @route(r'^$')
@@ -130,8 +144,9 @@ class BlogIndex(RoutablePageMixin, Page):
         pagination for posts
         '''
         print('route post list is called!!')
+        self.help_text = '近期文章：'
         all_post = self.get_recent_posts(999)
-        paginator = Paginator(all_post, 10)
+        paginator = Paginator(all_post, 20)
         p = request.GET.get('p')
         if not p:
             p = 1

@@ -9,30 +9,23 @@
 {% block content %}
 <div class='container bg-white'>
     <h1>{{ post.title }}</h1>
-    <p>
-        <span class="fas fa-calendar-alt"></span> {{post.date|date:"D d M Y"}} &nbsp;
-        <span class="fas fa-user"></span> {{post.owner}} &nbsp;
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <span class="fas fa-calendar-alt"></span> {{post.date|date:"D d M Y"}} &nbsp;
+            <span class="fas fa-user"></span> {{post.owner}} &nbsp;
+        </div>
 
-    </p>
+        <div>
+            {% for category in page.categories.all %}
+                <a href="http://127.0.0.1:8000/blog/category/{{ category.slug }}" class='badge badge-info badge-pill' >{{ category.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
     <hr>
     {{ post.body|markdown|safe }}
     <hr>
     <p><a href="{{ page.get_parent.url }}">Return to blog</a></p>
 
-    {% with categories=page.categories.all %}
-    {% if categories %}
-        <h3>Categories</h3>
-        <ul>
-            {% for category in categories %}
-                <li style="display: inline">
-                    {{ category.name }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
-    
-    <p><a href="/blog">Return to blog</a></p>
     {% show_comments %}
 </div>
 {% endblock %}
