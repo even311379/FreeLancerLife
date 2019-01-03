@@ -17,6 +17,13 @@ import MyImportantInfo as MIF
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
+
+
+LANGUAGES = (
+    ('en', ("English")),
+    ('zh', ("Chinese")),
+)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -24,13 +31,13 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
-    'home',
+    'home', # this app
     'search',
     'blog',
     'apps',
     'wagtailmd',
 
-    'wagtail.contrib.forms',
+    'wagtail.contrib.forms', # wagtail
     'wagtail.contrib.redirects',
     'wagtail.embeds',
     'wagtail.sites',
@@ -45,10 +52,12 @@ INSTALLED_APPS = [
     'wagtail.contrib.modeladmin',
     'wagtailmenus',
 
-    'modelcluster',
+    'wagtailtrans', # wagtail third party
+
+    'modelcluster', # django third party
     'taggit',
 
-    'django.contrib.admin',
+    'django.contrib.admin', # django defaults
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -65,9 +74,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
+    'wagtailtrans.middleware.TranslationMiddleware', # for multiple languages
+
     'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
+
+WAGTAILTRANS_SYNC_TREE = False
 
 ROOT_URLCONF = 'FreeLancerLife.urls'
 
@@ -109,7 +122,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'freelancerlife',
         'USER': 'even',
-        'PASSWORD': MIF.pq_password(),
+        'PASSWORD': MIF.pg_password(),
         'HOST': 'localhost',
         'PORT': '',
     }

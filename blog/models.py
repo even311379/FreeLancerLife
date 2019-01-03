@@ -31,9 +31,11 @@ from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase, Tag as TaggitTag
 from wagtailmd.utils import MarkdownField, MarkdownPanel
 
-# Create your models here.
-class BlogIndex(RoutablePageMixin, Page):
+from wagtailtrans.models import TranslatablePage
 
+# Create your models here.
+class BlogIndex(RoutablePageMixin, TranslatablePage):
+    Page = TranslatablePage
     title_caption = models.CharField(max_length=250,blank=True,)
     description = models.CharField(max_length=255, blank=True,)
     banner = models.ForeignKey(
@@ -67,7 +69,7 @@ class BlogIndex(RoutablePageMixin, Page):
             self.help_text = '分類搜索：'
             self.present_method = 1
             self.posts_this_page = []
-            all_post = self.get_posts()
+            all_post = self.get_posts(sibling = True)
             cats = []
             for cat in BlogCategory.objects.all():
                 if request.POST.get(cat.name):
@@ -89,14 +91,18 @@ class BlogIndex(RoutablePageMixin, Page):
         context['keyword'] = self.keyword
         context['categories'] = BlogCategory.objects.all()
         context['n_category_left'] = len(BlogCategory.objects.all()) % 3
-
+        print(self.language.code)
         return context
 
    
-    def get_posts(self):
+    def get_posts(self, sibling = False):
         all_post = []
-        all_post += PostPage.objects.live()
-        all_post += LandingPage.objects.live()
+        if sibling:
+            all_post += PostPage.objects.sibling_of(self).live()
+            all_post += LandingPage.objects.sibling_of(self).live()
+        else:
+            all_post += PostPage.objects.descendant_of(self).live()
+            all_post += LandingPage.objects.descendant_of(self).live()
         return all_post
 
     def get_recent_posts(self, n = 10):
@@ -165,7 +171,8 @@ class BlogIndex(RoutablePageMixin, Page):
 
   
 
-class PostPage(Page):
+class PostPage(TranslatablePage):
+    Page = TranslatablePage
     date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)
     categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
 
@@ -186,30 +193,15 @@ class PostPage(Page):
         return self.get_parent().specific
 
     def get_context(self, request, *args, **kwargs):
-        context = super(PostPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         context['blog_index'] = self.blog_index
         context['post'] = self
         return context
 
-@register_snippet
-class BlogCategory(Orderable, models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, max_length=80)
-
-    panels = [
-        FieldPanel('name'),
-        FieldPanel('slug'),
-    ]
-
-    class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.name
 
 
-class LandingPage(Page): # a special type of post page (I intend to use it for game devlog)
+class LandingPage(TranslatablePage): # a special type of post page (I intend to use it for game devlog)
+    Page = TranslatablePage
     date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)
     project_overview = models.BooleanField(default=False)
     categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
@@ -232,8 +224,25 @@ class LandingPage(Page): # a special type of post page (I intend to use it for g
     ]
     settings_panels = Page.settings_panels + [
         FieldPanel('date'),FieldPanel('project_overview'),
+    ]        
+
+@register_snippet
+class BlogCategory(Orderable, models.Model):
+    name = models.CharField(max_length=255)
+    name_en = models.CharField(max_length=255, blank=True)
+    slug = models.SlugField(unique=True, max_length=80)
+    shown_order = models.IntegerField(blank=True, unique=True,null=True)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('name_en'),
+        FieldPanel('slug'),
+        FieldPanel('shown_order'),
     ]
 
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
-
-        
+    def __str__(self):
+        return self.name

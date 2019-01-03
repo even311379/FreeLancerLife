@@ -6,8 +6,11 @@ from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from blog import models as blog_model
 
-class HomePage(Page):
+from wagtailtrans.models import TranslatablePage
+
+class HomePage(TranslatablePage):
     title_caption = models.CharField(max_length=250,blank=True)
+
     intro = RichTextField(blank=True)
     banner = models.ForeignKey(
         'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+',null=True,blank=True,
@@ -55,3 +58,7 @@ class HomePage(Page):
         all_LandingPage = blog_model.LandingPage.objects.live()
         context['recent_projects'] = [page for page in all_LandingPage if page.project_overview]
         return context
+
+
+
+

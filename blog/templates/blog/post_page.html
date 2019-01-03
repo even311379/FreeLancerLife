@@ -9,6 +9,7 @@
 {% block content %}
 <div class='container bg-white'>
     <h1>{{ post.title }}</h1>
+    {{ page.url }}
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <span class="fas fa-calendar-alt"></span> {{post.date|date:"D d M Y"}} &nbsp;
@@ -17,7 +18,7 @@
 
         <div>
             {% for category in page.categories.all %}
-                <a href="http://127.0.0.1:8000/blog/category/{{ category.slug }}" class='badge badge-info badge-pill' >{{ category.name }}</a>
+                <a href="http://127.0.0.1:8000/{{ page.language.code }}/blog/category/{{ category.slug }}" class='badge badge-info badge-pill' >{{ category.name }}</a>
             {% endfor %}
         </div>
     </div>

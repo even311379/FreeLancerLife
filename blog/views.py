@@ -7,4 +7,4 @@ def test(request):
     return HttpResponse(render(request, 'index.html', locals()))
 
 def root(request):
-    return redirect('/home')
+    return redirect('/zh/home')

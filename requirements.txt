@@ -1,12 +1,13 @@
 astroid==2.1.0
 beautifulsoup4==4.6.0
+certifi==2018.11.29
 chardet==3.0.4
 decorator==4.3.0
 Django==2.1.4
 django-cogwheels==0.2
-django-el-pagination==3.2.4
 django-ipware==1.1.2
 django-modelcluster==4.3
+django-modeltranslation==0.12.2
 django-taggit==0.23.0
 django-treebeard==4.3
 django-widget-tweaks==1.4.3
@@ -41,6 +42,7 @@ Unidecode==1.0.23
 urllib3==1.24.1
 wagtail==2.4
 wagtailmenus==2.12
+wagtailtrans==2.0.4
 wcwidth==0.1.7
 webencodings==0.5.1
 Willow==1.1

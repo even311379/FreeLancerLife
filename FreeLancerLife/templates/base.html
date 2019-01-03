@@ -18,7 +18,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {# Global stylesheets #}
-       
+        
         <!-- Bootstrap4 Core CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
           
@@ -34,15 +34,15 @@
         }
         </style>
 
+       
         <!-- Custom CSS -->
         <link href="{% static 'css/stylish-portfolio.css' %}" rel="stylesheet">
-        {% comment %} <link href="{% static '/css/codehilite_autumn.css' %}" rel="stylesheet"> {% endcomment %}
+        <link href="{% static '/css/switch.css' %}" rel="stylesheet">
 
         {% block extra_css %}
 
         {% endblock %}
     </head>
-    
     <body class="{% block body_class %}{% endblock %}" id="page-top">
         <!-- Navigation -->
         <a class="menu-toggle rounded" href="#">
@@ -55,22 +55,24 @@
             </li>
             
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="/home" style="font-weight:600">首頁</a>
+                <a class="js-scroll-trigger" href="/{{ page.language.code }}/home">{% if page.language.code == 'en' %}Home{% else %}首頁{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="/blog">文章</a>
+                <a class="js-scroll-trigger" href="/{{ page.language.code }}/blog">{% if page.language.code == 'en' %}Blog{% else %}部落格{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#services">找我工作</a>
+                <a class="js-scroll-trigger" href="#services">{% if page.language.code == 'en' %}HireMe{% else %}找我工作{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#portfolio">WebappService</a>
+                <a class="js-scroll-trigger" href="#portfolio">{% if page.language.code == 'en' %}WebappService{% else %}網頁APP{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#contact">Contact</a>
+                <a class="js-scroll-trigger" href="#contact">{% if page.language.code == 'en' %}ContactMe{% else %}聯絡我{% endif %}</a>
             </li>
+
+            
             <li class="sidebar-nav-item" style="padding:15px">
-                <form method="get" class="form-search" action="http://127.0.0.1:8000/blog/search_post" method="get">
+                <form method="get" class="form-search" action="http://127.0.0.1:8000/{{ page.language.code }}/blog/search_post" method="get">
                     <div class="input-group">
                         <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for post:" />
                         <span class="input-group-btn">
@@ -81,14 +83,23 @@
                     </div>
                 </form>
             </li>
+            {% load wagtailtrans_tags %}
+            {% get_translations page homepage_fallback=False include_self=False as translations %}
+            {% for language, trans_page  in translations.items %}
+            <li class="sidebar-nav-item" >
+                <a href="{{ trans_page.url }}" class=" js-scroll-trigger" >switch to {{ language }}</a>
+            </li>
+            {% endfor %} 
             {% block moremenu %}{% endblock %}
             </ul>
         </nav>
         {% block content %}{% endblock %}
+
         <!-- Scroll to Top Button-->
         <a class="scroll-to-top rounded js-scroll-trigger" href="#page-top">
         <i class="fas fa-angle-up"></i>
         </a> 
+
         {# Global javascript #}
         <!-- Bootstrap core JavaScript -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" ></script>
