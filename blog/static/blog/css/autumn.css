@@ -1,5 +1,7 @@
 .highlight .hll { background-color: #ffffcc }
-.highlight  { background: #f8f8f8; }
+.highlight  { background: -webkit-linear-gradient(0deg, #ffffff  3%, rgba(0,0,0,0) 3%), -webkit-linear-gradient(0deg, #f8f8f8 97%, #ffffff 97%)}
+.highlight { padding-left:3% };
+/* ref: https://blog.prototypr.io/css-only-multi-color-backgrounds-4d96a5569a20 */
 .highlight .c { color: #aaaaaa; font-style: italic } /* Comment */
 .highlight .err { color: #F00000; background-color: #F0A0A0 } /* Error */
 .highlight .k { color: #0000aa } /* Keyword */

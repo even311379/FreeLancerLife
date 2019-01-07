@@ -59,7 +59,8 @@
     <h2>  {{ help_text }}  </h2>
     {% if present_method == 1 %}
         {% for cat in searched_categories %}
-            <a href="http://127.0.0.1:8000/{{ page.language.code }}/blog/category/{{ cat.slug }}" class='badge badge-info badge-pill' >{{ cat.name }}</a>
+            <a href="http://127.0.0.1:8000/{{ page.language.code }}/blog/category/{{ cat.slug }}" class='badge badge-info badge-pill' >
+            {% if page.language.code == 'en' %}{{ cat.name_en }}{% else %}{{ cat.name }}{% endif %}{</a>
         {% endfor %}
         <br><br>
     {% endif %}
@@ -75,7 +76,7 @@
                 {% if categories %}
                 <div>
                     {% for category in categories %}
-                    <span class='badge badge-info badge-pill' >{{ category.name }}</span>
+                    <span class='badge badge-info badge-pill' >{% if page.language.code == 'en' %}{{ category.name_en }}{% else %}{{ category.name }}{% endif %}</span>
                     {% endfor %}
                 </div>
                 {% endif %}{% endwith %}
@@ -112,7 +113,7 @@
                     <span> </span>
                 </label>
                 <label for="{{ category.name }}" class="btn btn-default active" style="width: 120px">
-                    {{ category.name }}
+                    {% if page.language.code == 'en' %}{{ category.name_en }}{% else %}{{ category.name }}{% endif %}
                 </label>
             </div>
         </div>

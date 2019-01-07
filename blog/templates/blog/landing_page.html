@@ -4,18 +4,25 @@
 {% block title %}{{ self.title }} | {{ blog_page.title }}{% endblock title %}
 {% block meta_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock meta_title %}
 {% block meta_description %}{% if self.search_description %}{{ self.search_description }}{% else %}{{ self.body|striptags|truncatewords:20 }}{% endif %}{% endblock meta_description %}
-{% comment %} {% block extra_css %}
+{% block extra_css %}
+
+{% image page.banner max-1900x1268 as my_banner  %}
 <style>
-.callout h2 {
-    font-size: 5.5rem;
+.callout {
+  padding: 8rem 0;
+   background:url('{{ my_banner.url }}');
+  {% if not page.tilable_banner %}
+  background-repeat: no-repeat;
+  background-size: cover;
+  {% endif %}
 }
 </style>
-{% endblock %} {% endcomment %}
+{% endblock %}
 {% block body_class%}bg-light{% endblock %}
 {% block content %}
-<section class="callout">
+<section class="callout" style="color:{{page.title_color}};">
     <div class="container text-center">
-       <h2 class="mx-auto md-5">{{ page.title }}</h2>
+       <h3 class="mx-auto md-5">{{ page.title }}</h3>
         <em>
             <span class="fas fa-calendar-alt"></span> {{ page.date|date:"D d M Y" }} &nbsp;
             <span class="fas fa-user"></span> {{ page.owner}} &nbsp;
@@ -26,7 +33,8 @@
             <div class='row justify-content-sm-center' style='padding-top:2vh'>
                 {% for category in categories %}
                 <div class='col-sm-auto'>
-                <a class='btn btn-primary' href='/{{ page.language.code }}/blog/category/{{ category.slug }}' role="button">{{ category.name }}</a>
+                <a class='btn btn-primary' href='/{{ page.language.code }}/blog/category/{{ category.slug }}' role="button">
+                {% if page.language.code == 'en' %}{{ category.name_en }}{% else %}{{ category.name }}{% endif %}</a>
                 </div>
                 {% endfor %}
             </div>
@@ -34,18 +42,7 @@
 </section>
 
 {% comment %} create buttons for each categories: {% endcomment %}
-{% with categories=page.categories.all %}
-    {% if categories %}
-        <h3>Categories</h3>
-        <ul>
-            {% for category in categories %}
-                <li style="display: inline">
-                    <p>{{ category.name }}</p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+
 <div class='container'>
 {% with blocks=self.body %}
 

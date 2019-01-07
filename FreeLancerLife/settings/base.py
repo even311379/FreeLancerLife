@@ -56,6 +56,8 @@ INSTALLED_APPS = [
 
     'modelcluster', # django third party
     'taggit',
+    'colorfield',
+    'paypal.standard.ipn',
 
     'django.contrib.admin', # django defaults
     'django.contrib.auth',
@@ -64,6 +66,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+#django-paypal
+PAYPAL_RECEIVER_EMAIL = 'even311379@hotmail.com'
+PAYPAL_TEST = True
+
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',

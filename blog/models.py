@@ -10,6 +10,8 @@ from django.utils.dateformat import DateFormat
 from django.utils.formats import date_format
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
+from colorfield.fields import ColorField
+
 from wagtail.core import blocks
 from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField, StreamField
@@ -27,13 +29,56 @@ from wagtail.snippets.models import register_snippet
 from blog.blocks import TwoColumnBlock
 
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from modelcluster.tags import ClusterTaggableManager
-from taggit.models import TaggedItemBase, Tag as TaggitTag
+# from modelcluster.tags import ClusterTaggableManager
+# from taggit.models import TaggedItemBase, Tag as TaggitTag
 from wagtailmd.utils import MarkdownField, MarkdownPanel
 
 from wagtailtrans.models import TranslatablePage
 
 # Create your models here.
+
+@register_snippet
+class BlogCategory(Orderable, models.Model):
+    name = models.CharField(max_length=255)
+    name_en = models.CharField(max_length=255, blank=True)
+    slug = models.SlugField(unique=True, max_length=80)
+    shown_order = models.IntegerField(blank=True, unique=True,null=True)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('name_en'),
+        FieldPanel('slug'),
+        FieldPanel('shown_order'),
+    ]
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+
+@register_snippet
+class Series( models.Model):
+    name = models.CharField(max_length=255)
+    name_en = models.CharField(max_length=255, blank=True)
+    slug = models.SlugField(unique=True, max_length=80)
+    shown_order = models.IntegerField(blank=True, unique=True,null=True)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('name_en'),
+        FieldPanel('slug'),
+        FieldPanel('shown_order'),
+    ]
+
+    class Meta:
+        verbose_name = "Series"
+
+    def __str__(self):
+        return self.name
+
+
 class BlogIndex(RoutablePageMixin, TranslatablePage):
     Page = TranslatablePage
     title_caption = models.CharField(max_length=250,blank=True,)
@@ -169,23 +214,51 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
         self.p = p
         return Page.serve(self, request, *args, **kwargs)
 
-  
+# The abstract model for related links, complete with panels
+class RelatedLink(models.Model):
+    related_page = models.ForeignKey(
+        TranslatablePage,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    panels = [PageChooserPanel('related_page', ['blog.PostPage', 'blog.LandingPage'])]
+
+    class Meta:
+        abstract = True
+
+class PostPageRelatedLinks(Orderable, RelatedLink):
+    page = ParentalKey('blog.PostPage', on_delete=models.CASCADE, related_name='related_links')  
 
 class PostPage(TranslatablePage):
     Page = TranslatablePage
+    
     date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)
-    categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
+    is_series = models.BooleanField(default=False)
+    series_name = models.ForeignKey(Series, on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
+    series_id = models.IntegerField(blank=True, unique=False,null=True)
 
+    categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
+    
     body = MarkdownField()
     thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
+    
     content_panels = Page.content_panels + [
         ImageChooserPanel('thumbnail'),
         MarkdownPanel('body'),
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
+        InlinePanel('related_links', label="Related Links"),
     ]
 
     settings_panels = Page.settings_panels + [
         FieldPanel('date'),
+        MultiFieldPanel([
+            FieldPanel('is_series'),
+            FieldPanel('series_name'),
+            FieldPanel('series_id')],
+        heading='SeriesSetting',classname="collapsible collapsed"),
     ]
 
     @property
@@ -195,18 +268,37 @@ class PostPage(TranslatablePage):
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
         context['blog_index'] = self.blog_index
-        context['post'] = self
+        if self.is_series:
+            all_post = []
+            all_post += PostPage.objects.live()
+            all_post += LandingPage.objects.live()
+            context['Series'] = [p for p in all_post if (p.language == self.language) and (p.series_name == self.series_name)]
+            if self.language.code == 'zh':
+                context['Series_name'] = self.series_name
+            else:
+                context['Series_name'] = self.series_name.name_en
         return context
 
+
+class LandingPageRelatedLinks(Orderable, RelatedLink):
+    page = ParentalKey('blog.LandingPage', on_delete=models.CASCADE, related_name='related_links')  
 
 
 class LandingPage(TranslatablePage): # a special type of post page (I intend to use it for game devlog)
     Page = TranslatablePage
+
     date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)
     project_overview = models.BooleanField(default=False)
-    categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
-
     thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
+    is_series = models.BooleanField(default=False)
+    series_name = models.ForeignKey(Series, on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
+    series_id = models.IntegerField(blank=True, unique=False,null=True)
+
+    banner = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
+    title_color = ColorField(default='#FF0000') 
+    tilable_banner = models.BooleanField(default=False)
+
+    categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
     intro = models.CharField(max_length=255, blank=True,)
     body = StreamField([
         ('heading',blocks.CharBlock(classname="full title")),
@@ -217,32 +309,23 @@ class LandingPage(TranslatablePage): # a special type of post page (I intend to 
     ],null=True,blank=True)
 
     content_panels = Page.content_panels + [
+        MultiFieldPanel([
+            ImageChooserPanel('banner'),
+            FieldPanel('tilable_banner'),
+            FieldPanel('title_color')],
+        heading='Banner'),
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
-        ImageChooserPanel('thumbnail'),
         FieldPanel('intro'),
-        StreamFieldPanel('body')
+        StreamFieldPanel('body'),
+        InlinePanel('related_links', label="Related Links"),
     ]
     settings_panels = Page.settings_panels + [
         FieldPanel('date'),FieldPanel('project_overview'),
+        ImageChooserPanel('thumbnail'),
+        MultiFieldPanel([
+            FieldPanel('is_series'),
+            FieldPanel('series_name'),
+            FieldPanel('series_id')],
+        heading='SeriesSetting',classname="collapsible collapsed"),
     ]        
 
-@register_snippet
-class BlogCategory(Orderable, models.Model):
-    name = models.CharField(max_length=255)
-    name_en = models.CharField(max_length=255, blank=True)
-    slug = models.SlugField(unique=True, max_length=80)
-    shown_order = models.IntegerField(blank=True, unique=True,null=True)
-
-    panels = [
-        FieldPanel('name'),
-        FieldPanel('name_en'),
-        FieldPanel('slug'),
-        FieldPanel('shown_order'),
-    ]
-
-    class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.name

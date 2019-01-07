@@ -233,6 +233,13 @@ h6 {
   max-width: 30rem;
 }
 
+.callout h3 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  display: block;
+  max-width: 40rem;
+}
+
 .portfolio-item {
   display: block;
   position: relative;
