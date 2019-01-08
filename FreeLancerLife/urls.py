@@ -11,20 +11,32 @@ from wagtail.documents import urls as wagtaildocs_urls
 from search import views as search_views
 from blog import views as blog_views
 from apps import views as apps_views
+from home import views as home_views
+from controlcenter.views import controlcenter
+
+from django.views.generic import TemplateView
+
+from apps  import dash_test
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
+    path('dsadmin/dashboard/', controlcenter.urls), # django control center
+
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
     path('', blog_views.root),
     url(r'^search/$', search_views.search, name='search'),
+    path('zh/reply_contact', home_views.reply_contact),
+    path('en/reply_contact', home_views.reply_contact),
+    path('test', blog_views.test, name='test'),
+    path('django_plotly_dash/', include('django_plotly_dash.urls')),
+    path('dash_test', TemplateView.as_view(template_name = 'dash_test.html'), name='dash_test'),
+    # path('paypal_test',apps_views.pay_process, name = 'paypal_test'),
+    # path('my_return_view',apps_views.my_return_view, name = 'my_return_view'),
+    # path('my_cancel_view',apps_views.my_cancel_view, name = 'my_cancel_view'),
+    # url(r'^paypal/', include('paypal.standard.ipn.urls')),
     url(r'', include(wagtail_urls)),
 
-    path('test', blog_views.test, name='test'),
-    path('paypal_test',apps_views.pay_process, name = 'paypal_test'),
-    path('my_return_view',apps_views.my_return_view, name = 'my_return_view'),
-    path('my_cancel_view',apps_views.my_cancel_view, name = 'my_cancel_view'),
-    url(r'^paypal/', include('paypal.standard.ipn.urls')),
 ]
 
 

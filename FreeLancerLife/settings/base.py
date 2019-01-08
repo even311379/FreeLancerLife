@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'taggit',
     'colorfield',
     'paypal.standard.ipn',
+    'controlcenter',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
 
     'django.contrib.admin', # django defaults
     'django.contrib.auth',
@@ -71,6 +73,10 @@ INSTALLED_APPS = [
 PAYPAL_RECEIVER_EMAIL = 'even311379@hotmail.com'
 PAYPAL_TEST = True
 
+# django controlcenter
+CONTROLCENTER_DASHBOARDS = (
+    ('mydash', 'apps.controlcenter_test.MyDashboard'),
+)
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',

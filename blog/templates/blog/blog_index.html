@@ -4,7 +4,6 @@
 {% load menu_tags %}
 
 {% block extra_css %}
-{% comment %} <link rel="stylesheet" href="{% static '/blog/css/materialize.min.css' %}"> {% endcomment %}
 <style>
 .form-group input[type="checkbox"] {
     display: none;
@@ -59,8 +58,8 @@
     <h2>  {{ help_text }}  </h2>
     {% if present_method == 1 %}
         {% for cat in searched_categories %}
-            <a href="http://127.0.0.1:8000/{{ page.language.code }}/blog/category/{{ cat.slug }}" class='badge badge-info badge-pill' >
-            {% if page.language.code == 'en' %}{{ cat.name_en }}{% else %}{{ cat.name }}{% endif %}{</a>
+            <a href="/{{ page.language.code }}/blog/category/{{ cat.slug }}" class='badge badge-info badge-pill' >
+            {% if page.language.code == 'en' %}{{ cat.name_en }}{% else %}{{ cat.name }}{% endif %}</a>
         {% endfor %}
         <br><br>
     {% endif %}
@@ -97,7 +96,7 @@
 <div class='container bg-light' align='center' style="padding-top:3rem;padding-bottom:3rem">
 <h3>以類別搜尋po文：</h3>
 <br>
-<form action='http://127.0.0.1:8000/{{ page.language.code }}/blog/category/' method='POST'>
+<form action='/{{ page.language.code }}/blog/category/' method='POST'>
     {% csrf_token %}
 
 {% for category in categories %}

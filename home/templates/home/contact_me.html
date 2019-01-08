@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+<style>
+.contact_head {
+    padding: 5rem 0;
+}
+
+.contact_head h1 {
+    font-size: 6.5rem;
+}
+
+.large {
+    line-height: 3.75em;
+    font-size: 1.5em;
+    padding: 0rem 10rem;   
+}
+
+
+::placeholder{
+    text-align: center;
+}
+
+.input_type1, .input_type2 {
+    text-align: center;
+    outline: 0;
+    background: #f5f5f5;
+    width: 10rem;
+    margin: 0 0 0 0;
+    border-style: solid;
+    border-color: #f5f5f5;
+    border-width: thin;
+    line-height: 2rem;
+    transition: background .3s ease;
+}
+
+.input_type2 {
+    width: 20rem;
+}
+
+.input_type2:focus {
+    background: rgba(140,140,140,.2);
+}
+
+.input_type1:focus {
+    background: rgba(140,140,140,.2);
+}
+
+@media only screen and (max-width:600px) and (min-width:150px) {
+    .large{
+    padding: 0rem 0rem;
+    line-height: 2em;
+    font-size: 1.2em;
+    }
+    .contact_head h1 {
+    font-size: 4.5rem;
+    }
+    .input_type1{
+    line-height: 1.5rem;
+    width: 5rem;   
+    }
+    input_type2{
+    line-height: 1.5rem;
+    width: 10rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <div class='contact_head'>
+        <h1>{{ page.head }}</h1>
+        <em>{{ page.head_intro }}</em>
+    </div>
+    <form action='/{{ page.language.code }}/reply_contact' method='POST'>
+        {% csrf_token %}
+        <div class='large form-inline'>
+            <p style='text-indent: 10%'>{{ page.name_intro0 }}
+            <input type="text" name="fullName" id="fullName" placeholder="全名" value="" class="input_type1" required>
+            {{ page.name_intro1 }}
+            <input type="text" name="organization" id="organization" placeholder="單位名稱" value="" class="input_type1" required>
+            {{ page.assist }}
+            <select name="task_type" id="task_type" placeholder="請選擇" value="" class="input_type1" required>
+                {% for task in task_type %}
+                <option value={{ task }}>{{ task }}</option>
+                {% endfor %}
+            </select>
+            {{ page.due }}
+            <input type="text" name="due_date" id="due_date" placeholder="日期" value="" class="input_type1" required>
+            {{ page.plan_intro }}
+            <select name="plan_type" id="plan_type" placeholder="請選擇" value="" class="input_type1" required> 
+                {% for plan in plan_type %}
+                <option value={{ plan }}>{{ plan }}</option>
+                {% endfor %}
+            </select>
+            {{ page.mail_intro }}
+            <input type="email" name="email" id="email" placeholder="電子郵件" value="" class="input_type2" required>
+            {{ page.thanks}}
+            </p>
+        </div>
+
+        <div style="padding:2.5rem 15% 4rem 0">
+            <button type="submit" class="btn btn-lg btn-danger float-right" style="width:7.5rem;">寄出</button>
+        </div>
+    </form>
+
+</div>
+{% include 'footer.html' %}
+{% endblock %}

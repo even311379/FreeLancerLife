@@ -61,18 +61,18 @@
                 <a class="js-scroll-trigger" href="/{{ page.language.code }}/blog">{% if page.language.code == 'en' %}Blog{% else %}部落格{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#services">{% if page.language.code == 'en' %}HireMe{% else %}找我工作{% endif %}</a>
+                <a class="js-scroll-trigger" href="/{{ page.language.code }}/hire_me">{% if page.language.code == 'en' %}HireMe{% else %}找我工作{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#portfolio">{% if page.language.code == 'en' %}WebappService{% else %}網頁APP{% endif %}</a>
+                <a class="js-scroll-trigger" href="/{{ page.language.code }}/webapps">{% if page.language.code == 'en' %}WebappService{% else %}網頁APP{% endif %}</a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#contact">{% if page.language.code == 'en' %}ContactMe{% else %}聯絡我{% endif %}</a>
+                <a class="js-scroll-trigger" href="/{{ page.language.code }}/contact_me">{% if page.language.code == 'en' %}ContactMe{% else %}聯絡我{% endif %}</a>
             </li>
 
             
             <li class="sidebar-nav-item" style="padding:15px">
-                <form method="get" class="form-search" action="http://127.0.0.1:8000/{{ page.language.code }}/blog/search_post" method="get">
+                <form method="get" class="form-search" action="/{{ page.language.code }}/blog/search_post" method="get">
                     <div class="input-group">
                         <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for post:" />
                         <span class="input-group-btn">
@@ -84,12 +84,14 @@
                 </form>
             </li>
             {% load wagtailtrans_tags %}
+            {% if page %}
             {% get_translations page homepage_fallback=False include_self=False as translations %}
             {% for language, trans_page  in translations.items %}
             <li class="sidebar-nav-item" >
                 <a href="{{ trans_page.url }}" class=" js-scroll-trigger" >switch to {{ language }}</a>
             </li>
             {% endfor %} 
+            {% endif %}
             {% block moremenu %}{% endblock %}
             </ul>
         </nav>

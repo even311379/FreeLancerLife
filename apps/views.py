@@ -1,15 +1,20 @@
 from django.shortcuts import render
-
+from django.template.loader import get_template
 # Create your views here.
-'''
-test django paypal
-'''
 from django.urls import reverse
 from django.shortcuts import render
 from paypal.standard.forms import PayPalPaymentsForm
 from django.http import HttpResponse
 from django.conf import settings
 
+
+
+
+
+'''
+test django paypal
+'''
+'''
 def pay_process(request):
 
     # host = request.get_host()
@@ -36,3 +41,4 @@ def my_return_view(request):
 
 def my_cancel_view(request):
     return HttpResponse('<h1>This is my cancel view</h1>')
+'''

@@ -20,7 +20,7 @@
 
                 <div>
                     {% for category in page.categories.all %}
-                        <a href="http://127.0.0.1:8000/{{ page.language.code }}/blog/category/{{ category.slug }}" class='badge badge-info badge-pill' >
+                        <a href="/{{ page.language.code }}/blog/category/{{ category.slug }}" class='badge badge-info badge-pill' >
                         {% if page.language.code == 'en' %}{{ category.name_en }}{% else %}{{ category.name }}{% endif %}</a>
                     {% endfor %}
                 </div>
