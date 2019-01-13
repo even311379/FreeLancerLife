@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static wagtailcore_tags wagtailimages_tags blogapp_tags wagtailroutablepage_tags  %}
+{% load static wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags  %}
 {% load menu_tags %}
 
 {% block extra_css %}
@@ -39,10 +39,11 @@
 {% block content %}
     <section class="callout">
         <div class="container text-center">
-            <h2 class="mx-auto mb-5">{{ blog_index.title_caption }}</h2>
+            <h2 class="mx-auto mb-5">{{ page.title_caption }}</h2>
             <h6 class="mb-5">
             <em>from ABCD studio</em>
             </h6>
+            <a class="btn btn-primary btn-xl js-scroll-trigger" href="#posts_region">Find Out More</a>
         </div>
     </section>
 

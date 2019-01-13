@@ -129,7 +129,7 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
                         
         context['posts_this_page'] = self.posts_this_page
         context['p'] = self.p
-        context['blog_index'] = self
+        # context['blog_index'] = self
         context['help_text'] = self.help_text
         context['present_method'] = self.present_method
         context['searched_categories'] = self.searched_categories
@@ -214,6 +214,12 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
         self.p = p
         return Page.serve(self, request, *args, **kwargs)
 
+'''
+# the inline panel for page chooser not work in template rendering,
+although it looks so good in wagtail_admin, I have to ditch it!
+# instead, I'll just use two page chooser panel to pick related posts.
+
+
 # The abstract model for related links, complete with panels
 class RelatedLink(models.Model):
     related_page = models.ForeignKey(
@@ -229,8 +235,15 @@ class RelatedLink(models.Model):
     class Meta:
         abstract = True
 
+
 class PostPageRelatedLinks(Orderable, RelatedLink):
-    page = ParentalKey('blog.PostPage', on_delete=models.CASCADE, related_name='related_links')  
+    page = ParentalKey('blog.PostPage', on_delete=models.CASCADE, related_name='related_links') 
+
+class LandingPageRelatedLinks(Orderable, RelatedLink):
+    page = ParentalKey('blog.LandingPage', on_delete=models.CASCADE, related_name='related_links') 
+
+'''
+
 
 class PostPage(TranslatablePage):
     Page = TranslatablePage
@@ -245,11 +258,29 @@ class PostPage(TranslatablePage):
     body = MarkdownField()
     thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
     
+    related_page1 = models.ForeignKey(
+        'wagtailtrans.TranslatablePage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    related_page2 = models.ForeignKey(
+        'wagtailtrans.TranslatablePage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+
     content_panels = Page.content_panels + [
         ImageChooserPanel('thumbnail'),
         MarkdownPanel('body'),
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
-        InlinePanel('related_links', label="Related Links"),
+        PageChooserPanel('related_page1', ['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page2', ['blog.PostPage','blog.LandingPage']),
     ]
 
     settings_panels = Page.settings_panels + [
@@ -278,10 +309,7 @@ class PostPage(TranslatablePage):
             else:
                 context['Series_name'] = self.series_name.name_en
         return context
-
-
-class LandingPageRelatedLinks(Orderable, RelatedLink):
-    page = ParentalKey('blog.LandingPage', on_delete=models.CASCADE, related_name='related_links')  
+ 
 
 
 class LandingPage(TranslatablePage): # a special type of post page (I intend to use it for game devlog)
@@ -308,6 +336,22 @@ class LandingPage(TranslatablePage): # a special type of post page (I intend to 
         ('embedded_video', EmbedBlock(icon="media")),
     ],null=True,blank=True)
 
+    related_page1 = models.ForeignKey(
+        'wagtailtrans.TranslatablePage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    related_page2 = models.ForeignKey(
+        'wagtailtrans.TranslatablePage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
     content_panels = Page.content_panels + [
         MultiFieldPanel([
             ImageChooserPanel('banner'),
@@ -317,7 +361,9 @@ class LandingPage(TranslatablePage): # a special type of post page (I intend to 
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
         FieldPanel('intro'),
         StreamFieldPanel('body'),
-        InlinePanel('related_links', label="Related Links"),
+        PageChooserPanel('related_page1', ['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page2', ['blog.PostPage','blog.LandingPage']),
+        # InlinePanel('related_links', label="Related Links"),
     ]
     settings_panels = Page.settings_panels + [
         FieldPanel('date'),FieldPanel('project_overview'),

@@ -14,7 +14,10 @@ def markdown_filter(value):
         ],
         extension_configs = {
             'codehilite':[
-                ('css_class',"highlight")
+                ('css_class',"highlight"),
+                # ('noclasses','True'),
+                # ('pygments_style','emacs'),
+                # ('linenums','True')
             ]
         },
         output_format='html5'

@@ -24,6 +24,7 @@
 
 .input_type1, .input_type2 {
     text-align: center;
+    font-size: 0.8em;
     outline: 0;
     background: #f5f5f5;
     width: 10rem;
@@ -48,7 +49,7 @@
 }
 
 @media only screen and (max-width:600px) and (min-width:150px) {
-    .large{
+    .large {
     padding: 0rem 0rem;
     line-height: 2em;
     font-size: 1.2em;
@@ -56,12 +57,12 @@
     .contact_head h1 {
     font-size: 4.5rem;
     }
-    .input_type1{
+    .input_type1, .input_type2{
     line-height: 1.5rem;
-    width: 5rem;   
+    width: 5rem;
+    font-size: 0.8em;   
     }
-    input_type2{
-    line-height: 1.5rem;
+    .input_type2{
     width: 10rem;
     }
 }
@@ -72,40 +73,64 @@
 <div class='container'>
     <div class='contact_head'>
         <h1>{{ page.head }}</h1>
-        <em>{{ page.head_intro }}</em>
+        <em style="font-size:1.5em;">{{ page.head_intro }}</em>
     </div>
     <form action='/{{ page.language.code }}/reply_contact' method='POST'>
         {% csrf_token %}
         <div class='large form-inline'>
             <p style='text-indent: 10%'>{{ page.name_intro0 }}
-            <input type="text" name="fullName" id="fullName" placeholder="全名" value="" class="input_type1" required>
+            <input type="text" name="fullName" id="fullName"
+             placeholder={% if page.language.code == 'en' %}"Full Name"{% else %}"全名"{% endif %}
+              value="" class="input_type1" required
+              oninvalid="this.setCustomValidity('{% if page.language.code == "en" %}Fill your full name！{% else %}輸入您的全名！{% endif %}')"
+              onchange="this.setCustomValidity('')"> <!-- add custom validate text -->
             {{ page.name_intro1 }}
-            <input type="text" name="organization" id="organization" placeholder="單位名稱" value="" class="input_type1" required>
+            <input type="text" name="organization" id="organization"
+             placeholder={% if page.language.code == 'en' %}"Organization"{% else %}"單位名稱"{% endif %}
+              value="" class="input_type1" required
+              oninvalid="this.setCustomValidity('{% if page.language.code == 'en' %}Fill your organization！{% else %}輸入單位名稱！{% endif %}')" 
+              onchange="this.setCustomValidity('')">  
             {{ page.assist }}
-            <select name="task_type" id="task_type" placeholder="請選擇" value="" class="input_type1" required>
+            <select name="task_type" id="task_type" 
+            placeholder={% if page.language.code == 'en' %}"Select"{% else %}"請選擇"{% endif %} 
+            value="" class="input_type1" required style="color:gray">
                 {% for task in task_type %}
-                <option value={{ task }}>{{ task }}</option>
+                <option value="{{ task }}">{{ task }}</option>
                 {% endfor %}
             </select>
             {{ page.due }}
-            <input type="text" name="due_date" id="due_date" placeholder="日期" value="" class="input_type1" required>
+            <input type="text" name="due_date" id="due_date" 
+            placeholder={% if page.language.code == 'en' %}"Timeframe"{% else %}"時間範圍"{% endif %} 
+            value="" class="input_type1" required 
+            oninvalid="this.setCustomValidity('{% if page.language.code == 'en' %}Fill your date or timeframe！ {% else %}輸入日期或時間範圍！{% endif %}')" 
+            onchange="this.setCustomValidity('')">
             {{ page.plan_intro }}
-            <select name="plan_type" id="plan_type" placeholder="請選擇" value="" class="input_type1" required> 
+            <select name="plan_type" id="plan_type" 
+            placeholder={% if page.language.code == 'en' %}"Select"{% else %}"請選擇"{% endif %} 
+            value="" class="input_type1" required style="color:gray"> 
                 {% for plan in plan_type %}
-                <option value={{ plan }}>{{ plan }}</option>
+                <option value="{{ plan }}">{{ plan }}</option>
                 {% endfor %}
             </select>
             {{ page.mail_intro }}
-            <input type="email" name="email" id="email" placeholder="電子郵件" value="" class="input_type2" required>
-            {{ page.thanks}}
+            <input type="email" name="email" id="email" 
+            placeholder={% if page.language.code == 'en' %}"Email"{% else %}"電子郵件"{% endif %} 
+            value="" class="input_type2" required
+            oninvalid="this.setCustomValidity('{% if page.language.code == 'en' %}This is not a correct email address!?{% else %}這不是正確的email!?{% endif %}')" 
+            onchange="this.setCustomValidity('')">
+            {{ page.thanks }}
             </p>
         </div>
-
+        
+        <input type="text" name="language_code" style="display:none;" value="{{ page.language.code }}">
+        
         <div style="padding:2.5rem 15% 4rem 0">
-            <button type="submit" class="btn btn-lg btn-danger float-right" style="width:7.5rem;">寄出</button>
+            <button type="submit" class="btn btn-lg btn-danger float-right" style="width:7.5rem;">{% if page.language.code == 'en' %}Send{% else %}寄出{% endif %}</button>
         </div>
     </form>
 
+    <br><br>
+    <p class='float-right' style="font-size:0.8em;">The idea of this design is referenced from <a href='https://focuslabllc.com/'>focuslab</a>!</p>
 </div>
 {% include 'footer.html' %}
 {% endblock %}

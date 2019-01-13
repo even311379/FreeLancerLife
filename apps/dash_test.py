@@ -1,40 +1,120 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-
+from dash.dependencies import Input, Output, Event
 from django_plotly_dash import DjangoDash
+import plotly.graph_objs as go
+import pandas as pd
+import pandas_datareader.data as web
+import datetime
+
+import plotly
+import random
+import plotly.graph_objs as go
+from collections import deque
 
 
-app = DjangoDash('SimpleExample')   # replaces dash.Dash
+# app = DjangoDash('SimpleExample')   # replaces dash.Dash
 
-app.layout = html.Div([
-    dcc.RadioItems(
-        id='dropdown-color',
-        options=[{'label': c, 'value': c.lower()} for c in ['Red', 'Green', 'Blue']],
-        value='red'
-    ),
-    html.Div(id='output-color'),
-    dcc.RadioItems(
-        id='dropdown-size',
-        options=[{'label': i,
-                'value': j} for i, j in [('L','large'), ('M','medium'), ('S','small')]],
-        value='medium'
-    ),
-    html.Div(id='output-size')
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = DjangoDash('SimpleExample', external_stylesheets=external_stylesheets)
 
+X = deque(maxlen=20)
+Y =deque(maxlen=20)
+X.append(1)
+Y.append(1)
+
+# app = dash.Dash(__name__)
+app.layout = html.Div(
+    [
+        dcc.Graph(id='live-graph', animate=True),
+        dcc.Interval(
+            id='graph-update',
+            interval=1000 # interval unit is milli sec., so 1000 means 1 sec
+        )
+    ]
+)
+
+@app.callback(Output('live-graph','figure'),events = [Event('graph-update','interval')])
+def update_graph():
+    global X
+    global Y
+    X.append(X[-1]+1)
+    Y.append(Y[-1]+Y[-1]*random.uniform(-0.1,0.1))
+
+    data = go.Scatter(
+        x = list(X),
+        y = list(Y),
+        name = 'Scatter',
+        mode = 'lines+markers'
+    )
+
+    return {'data':[data],
+        'layout': go.Layout(xaxis=dict(range=[min(X),max(X)]),
+        yaxis=dict(range=[min(Y),max(Y)])
+        )
+        }
+
+'''
+# tutorial 03
+'''
+# app.layout = html.Div(
+#     children=[html.H1('Dash tutorial'),
+#     html.Div(children='''
+#         symbol to graph:
+#     '''),
+#     dcc.Input(id='input', value='', type='text'),
+#     html.Div(id='output-graph')
+#     ])
+
+
+# @app.callback(
+#     Output(component_id='output-graph', component_property='children'),
+#     [Input(component_id='input', component_property='value')]
+# )
+# def update(input_data='TSLA'):
+#     stock = input_data
+#     try:
+#         df = web.DataReader(stock,'iex',start,end)
+#     except:
+#         return 'You typed a wrong stock symble, try: AAPL'
+
+#     return dcc.Graph(
+#         id='example',
+#         figure={
+#             'data':[
+#                 {'x':df.index,'y':df.close,'type':'line','name':stock},
+#             ],
+#             'layout':{'title':'stock of {}'.format(stock)},},)
+
+'''
+# tutorual 02
+app.layout = html.Div(children=[
+    dcc.Input(id='input',value='Enter something', type='text'),
+    html.Div(id='output')
 ])
 
-
 @app.callback(
-    dash.dependencies.Output('output-color', 'children'),
-    [dash.dependencies.Input('dropdown-color', 'value')])
-def callback_color(dropdown_value):
-    return "The selected color is %s." % dropdown_value
+    Output(component_id='output', component_property='children'),
+    [Input(component_id='input', component_property='value')])
+def update_value(input_data):
+    try:
+        return str(float(input_data)**2)
+    except:
+        return "Error"
+'''
 
-@app.callback(
-    dash.dependencies.Output('output-size', 'children'),
-    [dash.dependencies.Input('dropdown-color', 'value'),
-    dash.dependencies.Input('dropdown-size', 'value')])
-def callback_size(dropdown_color, dropdown_size):
-    return "The chosen T-shirt is a %s %s one." %(dropdown_size,
-                                                dropdown_color)
+
+'''
+# tutorial 01
+
+app.layout = html.Div(
+    children=[html.H1('Dash tutorial'),
+    dcc.Graph(id='example',figure = {'data':[
+        {'x':[1,2,3,4,5],'y':[5,4,3,2,1],'type':'line','name':'Boats'},
+        {'x':[1,2,3,4,5],'y':[3,3,2,2,1],'type':'bar','name':'cars'},],
+        'layout':{'title':'basic dash sample'},},
+        style={'hieght': '500%','display':'inline-block'}
+        )
+    ])
+'''

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load plotly_dash static wagtailcore_tags wagtailimages_tags wagtailmd %}
+
+{% block content %}
+<div class='contanier'>
+<h1>{{ page.app_name }}</h1>
+{{ page.app_description |markdown|safe }}
+
+{% if page.is_dash_app %}
+{% plotly_app name=page.app_name ratio=1 %}
+{% endif %}
+
+</div>
+{% if page.component_name %}
+{% include page.component_name %}
+{% endif %}
+{% endblock %}

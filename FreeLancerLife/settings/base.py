@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'colorfield',
     'paypal.standard.ipn',
     'controlcenter',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig', # django plotly dash
+    # 'channels',
 
     'django.contrib.admin', # django defaults
     'django.contrib.auth',
@@ -68,6 +69,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+# django plotly dash
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             'hosts': [('127.0.0.1', 6379),],
+#         },
+#     },
+# }
 
 #django-paypal
 PAYPAL_RECEIVER_EMAIL = 'even311379@hotmail.com'
@@ -80,6 +91,8 @@ CONTROLCENTER_DASHBOARDS = (
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'wagtail.core.middleware.SiteMiddleware', # for multiple languages
+    'wagtailtrans.middleware.TranslationMiddleware', # for multiple languages
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -87,10 +100,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
-    'wagtailtrans.middleware.TranslationMiddleware', # for multiple languages
-
-    'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+
+
 ]
 
 WAGTAILTRANS_SYNC_TREE = False
@@ -141,6 +153,7 @@ DATABASES = {
     }
 }
 
+SITE_ID = 0
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

@@ -53,9 +53,9 @@
     related posts:
     <div class="d-flex justify-content-between align-items-center" style="padding-left:10%;padding-right:10%;">
     {% for rp in page.related_links.all %}
-        {% image rp.page.thumbnail max-286x180 as this_thumbnail  %}
+        {% comment %} {% image rp.page.thumbnail max-286x180 as this_thumbnail  %} {% endcomment %}
         <div class="card" style="width: 14rem;">
-            <img class="card-img-top" src="{{ this_thumbnail.url }}" alt="Card image cap">
+            {% comment %} <img class="card-img-top" src="{{ this_thumbnail.url }}" alt="Card image cap"> {% endcomment %}
             <div class="card-body">
             <p class="card-text">{{ rp.page.title }}</p>
             </div>

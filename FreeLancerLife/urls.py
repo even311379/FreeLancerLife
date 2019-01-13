@@ -16,7 +16,7 @@ from controlcenter.views import controlcenter
 
 from django.views.generic import TemplateView
 
-from apps  import dash_test
+from apps  import dash_test, fish_map
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
@@ -30,7 +30,7 @@ urlpatterns = [
     path('en/reply_contact', home_views.reply_contact),
     path('test', blog_views.test, name='test'),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
-    path('dash_test', TemplateView.as_view(template_name = 'dash_test.html'), name='dash_test'),
+    # path('zh/dash_test', TemplateView.as_view(template_name = 'dash_test.html'), name='dash_test'),
     # path('paypal_test',apps_views.pay_process, name = 'paypal_test'),
     # path('my_return_view',apps_views.my_return_view, name = 'my_return_view'),
     # path('my_cancel_view',apps_views.my_cancel_view, name = 'my_cancel_view'),

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags wagtailmd %}
+
+{% block extra_css %}
+<style>
+{% image page.banner max-1900x1268 as my_banner  %}
+.callout {
+  padding: 18rem 0;
+  background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.1)), to(rgba(255, 255, 255, 0.1))), url("{{ my_banner.url }}");
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url("{{ my_banner.url }}");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.content_text {
+    padding: 1rem 5rem 0; 
+}
+
+.detail_text {
+    padding: 0 0 0 3rem;
+}
+.section_gap {
+    padding: 3rem 0 3rem 0;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="callout">
+    <div class="container text-center">
+        <h2 class="mx-auto mb-5">{{ page.title_caption }}</h2>
+        <h6 class="mb-5">
+        <em>from ABCD studio</em>
+        </h6>
+        <a class="btn btn-primary btn-xl js-scroll-trigger" href="#detail">Find Out More</a>
+    </div>
+</section>
+<div class='section_gap'></div>
+<section id="detail">
+    <div class="container">
+        <h2>{% if page.language.code == 'en' %}Flow{% else %}流程{% endif %}</h2>
+        <div class='content_text' style='font-size: 1.5rem;'>
+            {{ page.Flow |markdown|safe }}
+        </div>
+        <hr>
+        <h4>{% if page.language.code == 'en' %}Kind{% else %}種類{% endif %}</h4>
+        <div class='content_text'>
+            {{ page.Task |markdown|safe }}
+        </div>
+        <hr>
+        <h4>{% if page.language.code == 'en' %}Plan{% else %}方案{% endif %}</h4>
+        <div class='content_text'>
+            {{ page.Plan |markdown|safe }}
+        </div>
+        <hr>
+        <h4>{% if page.language.code == 'en' %}Charge{% else %}收費{% endif %}</h4>
+        <div class='content_text'>
+            {{ page.Charge |markdown|safe }}
+        </div>
+    </div>
+</section>
+{% include 'footer.html' %}
+{% endblock %}

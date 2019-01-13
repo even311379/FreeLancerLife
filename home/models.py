@@ -8,6 +8,7 @@ from wagtail.snippets.models import register_snippet
 
 from blog import models as blog_model
 from wagtailtrans.models import TranslatablePage
+from wagtailmd.utils import MarkdownField, MarkdownPanel
 
 class HomePage(TranslatablePage):
     title_caption = models.CharField(max_length=250,blank=True)
@@ -56,7 +57,7 @@ class HomePage(TranslatablePage):
 
     def get_context(self, request, *args, **kwargs):
         context = super(HomePage, self).get_context(request, *args, **kwargs)
-        all_LandingPage = blog_model.LandingPage.objects.live()
+        all_LandingPage = [p for p in blog_model.LandingPage.objects.live() if p.language==self.language]
         context['recent_projects'] = [page for page in all_LandingPage if page.project_overview]
         return context
 
@@ -95,16 +96,18 @@ class ContactMeData(models.Model):
         return self.name
 
 class ContactMe(TranslatablePage):
-    head = models.CharField(max_length=30,blank=True)
-    head_intro = models.CharField(max_length=30,blank=True)
 
-    name_intro0 = models.CharField(max_length=30,blank=True)
-    name_intro1 = models.CharField(max_length=30,blank=True)
-    assist = models.CharField(max_length=30,blank=True)
-    due = models.CharField(max_length=30,blank=True)
-    plan_intro = models.CharField(max_length=30,blank=True)
-    mail_intro = models.CharField(max_length=30,blank=True)
-    thanks = models.CharField(max_length=30,blank=True)
+    Page = TranslatablePage
+    head = models.CharField(max_length=30,blank=True)
+    head_intro = models.CharField(max_length=80,blank=True)
+
+    name_intro0 = models.CharField(max_length=80,blank=True)
+    name_intro1 = models.CharField(max_length=80,blank=True)
+    assist = models.CharField(max_length=80,blank=True)
+    due = models.CharField(max_length=80,blank=True)
+    plan_intro = models.CharField(max_length=80,blank=True)
+    mail_intro = models.CharField(max_length=80,blank=True)
+    thanks = models.CharField(max_length=80,blank=True)
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([
@@ -124,11 +127,31 @@ class ContactMe(TranslatablePage):
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        context['task_type'] = [i.name for i in task_type.objects.all()]
-        context['plan_type'] = [i.name for i in plan_type.objects.all()]
+        if self.language.code == 'en':
+            context['task_type'] = [i.name_en for i in task_type.objects.all()]
+            context['plan_type'] = [i.name_en for i in plan_type.objects.all()]
+        else:
+            context['task_type'] = [i.name for i in task_type.objects.all()]
+            context['plan_type'] = [i.name for i in plan_type.objects.all()]
         return context
 
 
 class HireMe(TranslatablePage):
-    pass
+    Page = TranslatablePage
+    banner = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
+    title_caption = models.CharField(max_length=80,blank=True)
+    Flow = MarkdownField(blank=True) 
+    Task = MarkdownField(blank=True)
+    Plan = MarkdownField(blank=True)
+    Charge = MarkdownField(blank=True)
+
+    content_panels = Page.content_panels + [
+        ImageChooserPanel('banner'),
+        FieldPanel('title_caption'),
+        MarkdownPanel('Flow'),
+        MarkdownPanel('Task'),
+        MarkdownPanel('Plan'),
+        MarkdownPanel('Charge'),
+    ]
+
 

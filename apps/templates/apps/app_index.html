@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% load static wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags  %}
+
+{% block extra_css %}
+{% image page.banner max-1900x1268 as my_banner  %}
+<style>
+.callout {
+  padding: 18rem 0;
+  background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.1)), to(rgba(255, 255, 255, 0.1))), url("{{ my_banner.url }}");
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url("{{ my_banner.url }}");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+    <section class="callout">
+        <div class="container text-center">
+            <h2 class="mx-auto mb-5">{{ page.title_caption }}</h2>
+            <h6 class="mb-5">
+            <em>from ABCD studio</em>
+            </h6>
+            <a class="btn btn-primary btn-xl js-scroll-trigger" href="#posts_region">Find Out More</a>
+        </div>
+    </section>
+
+    <section class="content-section" id="posts_region">
+      <div class="container">
+        <div class="content-section-heading text-center">
+          <h3 class="text-secondary mb-0">{% if page.language.code == 'en' %}PORFOLIO{% else %}作品集{% endif %}</h3>
+          <h2 class="mb-5">{% if page.language.code == 'en' %}Recent Projects{% else %}近期專案{% endif %}</h2>
+        </div>
+        <div class="row no-gutters">
+          {% for app in app_posts %}
+          <div class="col-lg-6">
+            <a class="portfolio-item" href="/{{ page.language.code }}/app/{{app.slug}}">
+              <span class="caption">
+                <span class="caption-content">
+                  <h2>{{ app.title }}</h2>
+                  {% comment %} <p class="mb-0">{{ app.app_description |truncatechars:100|safe }}</p> {% endcomment %}
+                </span>
+              </span>
+              {% image app.app_thumbnail max-700x647 as my_image  %}
+              <img class="img-fluid" src="{{ my_image.url }}" alt="">
+            </a>
+          </div>
+          {% endfor %}
+    </section>
+
+{% include 'footer.html' %}
+
+{% endblock %}
