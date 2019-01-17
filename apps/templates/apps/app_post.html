@@ -1,15 +1,31 @@
 {% extends "base.html" %}
-{% load plotly_dash static wagtailcore_tags wagtailimages_tags wagtailmd %}
+{% load plotly_dash static wagtailcore_tags wagtailimages_tags wagtailmd blogapp_tags %}
+
+{% block extra_css %}
+<style>
+iframe {
+    height:600px;
+    display: block;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class='contanier'>
+<div class='container bg-light'>
 <h1>{{ page.app_name }}</h1>
+<p>A bunch of help text will shown here
+A bunch of help text will shown here
+A bunch of help text will shown hereA bunch of help text will shown here
+A bunch of help text will shown hereA bunch of help text will shown hereA bunch of help text will shown here
+A bunch of help text will shown here</p>
 {{ page.app_description |markdown|safe }}
 
 {% if page.is_dash_app %}
-{% plotly_app name=page.app_name ratio=1 %}
+{% plotly_app name=page.app_name ratio=0.5 %}
 {% endif %}
-
+{% comment %} </div>
+<div class="container bg-primary"> {% endcomment %}
+{% show_comments %}
 </div>
 {% if page.component_name %}
 {% include page.component_name %}

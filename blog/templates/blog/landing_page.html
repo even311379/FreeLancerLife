@@ -6,14 +6,14 @@
 {% block meta_description %}{% if self.search_description %}{{ self.search_description }}{% else %}{{ self.body|striptags|truncatewords:20 }}{% endif %}{% endblock meta_description %}
 {% block extra_css %}
 
-{% image page.banner max-1900x1268 as my_banner  %}
+{% image page.banner max-1900x600 as my_banner  %}
 <style>
 .callout {
-  padding: 8rem 0;
+  padding: 6rem 0;
    background:url('{{ my_banner.url }}');
   {% if not page.tilable_banner %}
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100% 100%;
   {% endif %}
 }
 </style>
@@ -59,10 +59,9 @@
         {% endif %}
     {% endfor %}
 
-{% comment %} {% endwith %} {% endcomment %}
-</div>
 <p><a href="/blog">Return to blog</a></p>
 {% show_comments %}
+</div>
 </div>
 
 {% endblock %}

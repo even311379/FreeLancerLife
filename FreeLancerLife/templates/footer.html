@@ -1,22 +1,105 @@
-    <footer class="footer text-center">
-      <div class="container">
-        <ul class="list-inline mb-5">
-          <li class="list-inline-item">
-            <a class="social-link rounded-circle text-white mr-3" href="#">
-              <i class="icon-social-facebook"></i>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a class="social-link rounded-circle text-white mr-3" href="#">
-              <i class="icon-social-twitter"></i>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a class="social-link rounded-circle text-white" href="#">
-              <i class="icon-social-github"></i>
-            </a>
-          </li>
-        </ul>
-        <p class="text-muted small mb-0">Copyright &copy; {{ page.title }} 2018</p>
+    <footer class="footer bg-secondary">
+      <div class="container-fluid text-light" id='footer_container' style="padding: 0 5vw">
+        <div class='row d-flex justify-content-between'>
+          <div class='col-4 text-left' id='footer_col_01'>
+            <div class='row'>
+              <div class='col' style="font-size: 80%;">
+                <hr class="my_hr">
+                <a href="/{{ page.language.code }}/home"><p class="text-light">{% if page.language.code == 'en' %}Home{% else %}首頁{% endif %}</p></a>
+                <hr class="my_hr">
+                <a href="/{{ page.language.code }}/webapps"><p class="text-light">{% if page.language.code == 'en' %}WebAPP{% else %}網頁APP{% endif %}</p></a>
+                <hr class="my_hr">
+                <a href="https://github.com/even311379/"><p class="text-light">My Github</p></a>
+              </div>
+              <div class='col' style="font-size: 80%;">
+                <hr class="my_hr">
+                <a href="/{{ page.language.code }}/blog"><p class="text-light">{% if page.language.code == 'en' %}Blog{% else %}部落格{% endif %}</p></a>
+                <hr class="my_hr">
+                <a href="/{{ page.language.code }}/contact_me"><p class="text-light">{% if page.language.code == 'en' %}Contact Me{% else %}聯絡我{% endif %}</p></a>
+                <hr class="my_hr">
+                <a href="https://github.com/even311379/"><p class="text-light">legal Stuff</p></a>
+              </div>
+            </div>
+          </div>
+
+          <div class='col-4 d-flex flex-column justify-content-between' id='footer_col_02'>
+            <div class='row'><p >Contact: even311379@hotmail.com</p></div>
+            <div class='row'>
+            <form action='/add_subscribe' method='POST'>
+              {% csrf_token %}
+              <div class="input-group">
+                <input type="email" class="form-control" placeholder="{% if page.language.code == 'en' %}Leave your email!?{% else %}留下email!?{% endif %}" style="background-color:#6C757D;border: 2px solid white; max-width:300px" name="subscriber_mail">
+                <div class="input-group-append">
+                  <button class="footer_form text-light" type="submit">{% if page.language.code == 'en' %}Subscribe{% else %}訂閱{% endif %}</button>
+                </div>
+               
+                </p>
+              </div>
+            </form></div>
+            <div class='row'>
+                <p style="font-size: 80%;"> 
+                {% if page.language.code == 'en' %}
+                  If you subscribe, you'll receive email notification of new posts.
+                {% else %}
+                  如果您訂閱，每當新的文章貼出時，您會收到email通知。
+                {% endif %}
+            </div>
+
+            <div class='row'><p >Copyright &copy; ABCD STUDIO 2019</p></div>
+          </div>
+        </div>
       </div>
+        
     </footer>
+
+<style>
+
+.my_hr {
+    height:2px;
+    border:none;
+    color:#fff;
+    background-color:#fff;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.form-control::placeholder { color: white;font-size: 80%;} /* Chrome, Firefox, Opera*/
+:-ms-input-placeholder.form-control { color: white; font-size: 80%;}  /* Internet Explorer*/
+.form-control::-ms-input-placeholder { color: white; font-size: 80%;}  /* Microsoft Edge*/
+
+.footer_form {
+  border: 2px solid white;
+  background-color:#6C757D;
+  font-color:#fff;
+}
+
+
+</style>
+{% comment %} <script>
+function checkWidth(init)
+{
+    /*If browser resized, check width again */
+    if ($(window).width() < 800) {
+      $('#footer_col_01').addClass('col-8');
+			$('#footer_col_02').addClass('col-8');  
+			$('#footer_col_01').removeClass('col-4');
+			$('#footer_col_02').removeClass('col-4');
+      console.log(123);
+    }
+    else {
+      $('#footer_col_01').addClass('col-4');
+			$('#footer_col_02').addClass('col-4');  
+			$('#footer_col_01').removeClass('col-8');
+			$('#footer_col_02').removeClass('col-8');
+    }
+}
+
+$(document).ready(function() {
+    console.log(123);
+    checkWidth();
+    $(window).resize(function() {
+        checkWidth();
+        console.log(456);
+    });
+});
+</script> {% endcomment %}

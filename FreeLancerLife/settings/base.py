@@ -57,8 +57,6 @@ INSTALLED_APPS = [
     'modelcluster', # django third party
     'taggit',
     'colorfield',
-    'paypal.standard.ipn',
-    'controlcenter',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig', # django plotly dash
     # 'channels',
 
@@ -142,6 +140,20 @@ WSGI_APPLICATION = 'FreeLancerLife.wsgi.application'
 # }
 
 # Use postgres db
+# my postgres in digital ocean
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'freelancerlife',
+#         'USER': 'even',
+#         'PASSWORD': MIF.pg_password(),
+#         'HOST': '128.199.221.152',
+#         'PORT': '5432',
+#     }
+# }
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

@@ -111,7 +111,10 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
         print('main get_context is called!')
         context = super().get_context(request, *args, **kwargs)
         if request.method == 'POST':
-            self.help_text = '分類搜索：'
+            if self.language.code == 'en':
+                self.help_text = 'Posts contain these categories：'
+            else:
+                self.help_text = '包含這些類別的文章：'
             self.present_method = 1
             self.posts_this_page = []
             all_post = self.get_posts(sibling = True)
@@ -170,7 +173,10 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
     # @route(r'^category$')
     def post_by_category(self, request, category, *args, **kwargs):
         print('route post_by_category is called!!')
-        self.help_text = '分類搜索：'
+        if self.language.code == 'en':
+            self.help_text = 'Posts contain these categories：'
+        else:
+            self.help_text = '包含這些類別的文章：'
         self.present_method = 1
         self.searched_categories = BlogCategory.objects.filter(slug=category)
         self.posts_this_page = [post for post in self.get_recent_posts(50) if category in [c.slug for c in post.categories.all()]]
@@ -180,7 +186,10 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
     @route(r'^search_post/$')
     def post_search(self,request, *args, **kwargs):
         print('route post_search is called!!')
-        self.help_text = '關鍵字搜索：'
+        if self.language.code == 'en':
+            self.help_text = 'Search by keyword:'
+        else:
+            self.help_text = '關鍵字搜尋：'
         self.present_method = 2
         search_query = request.GET.get('q', None)
         self.keyword = search_query
@@ -195,7 +204,10 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
         pagination for posts
         '''
         print('route post list is called!!')
-        self.help_text = '近期文章：'
+        if self.language.code == 'en':
+            self.help_text = 'Recent Posts：'
+        else:
+            self.help_text = '近期文章：'
         all_post = self.get_recent_posts(999)
         paginator = Paginator(all_post, 20)
         p = request.GET.get('p')

@@ -3,7 +3,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.urls import path
 
-
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -12,7 +11,6 @@ from search import views as search_views
 from blog import views as blog_views
 from apps import views as apps_views
 from home import views as home_views
-from controlcenter.views import controlcenter
 
 from django.views.generic import TemplateView
 
@@ -20,7 +18,6 @@ from apps  import dash_test, fish_map
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
-    path('dsadmin/dashboard/', controlcenter.urls), # django control center
 
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),

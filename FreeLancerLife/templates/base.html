@@ -32,9 +32,19 @@
         * {
             font-family: 'Noto Sans TC';
         }
+
+        .section_gap {
+            padding: 3rem 0;
+        }
+
+        .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+        }
         </style>
 
-       
         <!-- Custom CSS -->
         <link href="{% static 'css/stylish-portfolio.css' %}" rel="stylesheet">
         <link href="{% static '/css/switch.css' %}" rel="stylesheet">
@@ -74,7 +84,7 @@
             <li class="sidebar-nav-item" style="padding:15px">
                 <form method="get" class="form-search" action="/{{ page.language.code }}/blog/search_post" method="get">
                     <div class="input-group">
-                        <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for post:" />
+                        <input type="text" class="form-control" name="q" placeholder="Search for post:">
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-success" id="searchsubmit">
                             <i class="fas fa-search"></i>
@@ -82,7 +92,9 @@
                         </span>
                     </div>
                 </form>
+                <p class='text-white' style="font-size: 80%;">{% if page.language.code == 'en' %} Search posts by keyword {% else %}以關鍵字搜尋文章{% endif %}</p>
             </li>
+
             {% load wagtailtrans_tags %}
             {% if page %}
             {% get_translations page homepage_fallback=False include_self=False as translations %}
@@ -93,6 +105,14 @@
             {% endfor %} 
             {% endif %}
             {% block moremenu %}{% endblock %}
+
+            {% comment %}
+            I deside not to add this, it's really not good!
+            <li class="fixed-bottom" style='padding:15px'>
+                <img class="center" src="{% static 'img/my_photo.jpg'%}" style="border-radius: 50%;max-width: 100px;height: auto;">
+                <p class="text-white">should I put my image and a bunch of info here? will it look alright?</p>
+            </li>
+            {% endcomment %}
             </ul>
         </nav>
         {% block content %}{% endblock %}
@@ -116,7 +136,7 @@
 
         <!-- Custom scripts for this template -->
         <script src="{% static 'js/stylish-portfolio.js' %}"></script>
-        {% comment %} <script type="text/javascript" src="{% static 'js/FreeLancerLife.js' %}"></script> {% endcomment %}
+        <script type="text/javascript" src="{% static 'js/FreeLancerLife.js' %}"></script>
 
         {% block extra_js %}
         {% endblock %}

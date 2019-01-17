@@ -3,14 +3,14 @@
 
 {% block extra_css %}
 <style>
-{% image page.banner max-1900x1268 as my_banner  %}
+{% image page.banner max-1900x600 as my_banner  %}
 .callout {
-  padding: 18rem 0;
+  padding: 8rem 0;
   background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.1)), to(rgba(255, 255, 255, 0.1))), url("{{ my_banner.url }}");
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url("{{ my_banner.url }}");
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100% 100%;
 }
 
 .content_text {
@@ -34,7 +34,6 @@
         <h6 class="mb-5">
         <em>from ABCD studio</em>
         </h6>
-        <a class="btn btn-primary btn-xl js-scroll-trigger" href="#detail">Find Out More</a>
     </div>
 </section>
 <div class='section_gap'></div>
@@ -55,10 +54,6 @@
             {{ page.Plan |markdown|safe }}
         </div>
         <hr>
-        <h4>{% if page.language.code == 'en' %}Charge{% else %}收費{% endif %}</h4>
-        <div class='content_text'>
-            {{ page.Charge |markdown|safe }}
-        </div>
     </div>
 </section>
 {% include 'footer.html' %}
