@@ -11,10 +11,8 @@
           background-size: 100% 100%;
         } 
         </style>
-        {% comment %} style="padding:0 0 10vh 10vw" {% endcomment %}
 {% endblock %}
 
-{% comment %} {% block body_class %}template-homepage{% endblock %} {% endcomment %}
 
 {% block content %}
 <body id="page-top">
@@ -41,7 +39,7 @@
         <div class="row no-gutters">
           {% for project in recent_projects %}
           <div class="col-lg-6">
-            <a class="portfolio-item" href="#">
+            <a class="portfolio-item" href="{{ project.url }}">
               <span class="caption">
                 <span class="caption-content">
                   <h2>{{ project.title }}</h2>
@@ -59,12 +57,8 @@
     <!-- Services -->
     <section class="content-section bg-primary text-white text-center" id="services">
       <div class="container">
-        {% comment %} <div class="content-section-heading">
-          <h3 class="text-secondary mb-0">{% if page.language.code == 'en' %}Services{% else %}服務{% endif %}</h3>
-          <h2 class="mb-5">{% if page.language.code == 'en' %}What I Offer{% else %}我提供什麼{% endif %}</h2>
-        </div> {% endcomment %}
         <div class="content-section-heading">
-          <h2 class="mb-5">{% if page.language.code == 'en' %}About PUBF{% else %}關於PUBF{% endif %}</h2>
+          <h2 class="mb-5">{{ page.about_caption }}</h2>
         </div>
         <div class="text-white pb-5 px-5" style='text-indent: 2rem'>{{ page.about_content |richtext }}</div>
         <div class="row">
@@ -75,7 +69,6 @@
             <h4>
               <strong>{{ page.data_title }}</strong>
             </h4>
-            {% comment %} <p class="text-faded mb-0">{{ page.data_content | richtext }}</p> {% endcomment %}
           </div>
           <div class="col-lg-3 col-md-6 mb-lg-0">
             <span class="service-icon rounded-circle mx-auto mb-3">
@@ -84,7 +77,6 @@
             <h4>
               <strong>{{ page.web_title }}</strong>
             </h4>
-            {% comment %} <p class="text-faded mb-0">{{ page.web_content | richtext }}</p> {% endcomment %}
           </div>
           <div class="col-lg-3 col-md-6 mb-lg-0">
             <span class="service-icon rounded-circle mx-auto mb-3">
@@ -93,7 +85,6 @@
             <h4>
               <strong>{{ page.game_title }}</strong>
             </h4>
-            {% comment %} <p class="text-faded mb-0">{{ page.game_content | richtext }}</p> {% endcomment %}
           </div>
           <div class="col-lg-3 col-md-6 mb-lg-0">
             <span class="service-icon rounded-circle mx-auto mb-3">
@@ -102,28 +93,10 @@
             <h4>
               <strong>{{ page.tutorial_title }}</strong>
             </h4>
-            {% comment %} <p class="text-faded mb-0">{{ page.tutorial_content | richtext }}</p> {% endcomment %}
           </div>
         </div>
       </div>
     </section>
-
-    <!-- About -->
-    {% comment %} <section class="content-section bg-light" id="about">
-      <div class="container text-center">
-        <div class="row">
-          <div class="col-lg-10 mx-auto">
-            <h2>{{ page.about_caption }}</h2>
-            <div class="lead mb-5">{{ page.about_content | richtext }}</div>
-            <a class="btn btn-dark btn-xl js-scroll-trigger" href="#services">What We Offer</a>
-          </div>
-        </div>
-      </div>
-    </section> {% endcomment %}
-
-
-
-
 
 {% include 'footer.html' %}
 {% endblock %}

@@ -27,8 +27,9 @@
             <div class='row'>
             <form action='/add_subscribe' method='POST'>
               {% csrf_token %}
+              <input type="text" name="language_code" style="display:none;" value="{{ page.language.code }}">
               <div class="input-group">
-                <input type="email" class="form-control" placeholder="{% if page.language.code == 'en' %}Leave your email!?{% else %}留下email!?{% endif %}" style="background-color:#6C757D;border: 2px solid white; max-width:300px" name="subscriber_mail">
+                <input type="email" class="form-control" placeholder="{% if page.language.code == 'en' %}Leave your email!?{% else %}留下email!?{% endif %}" style="background-color:#6C757D;border: 2px solid white; max-width:300px;color:white" name="subscriber_mail">
                 <div class="input-group-append">
                   <button class="footer_form text-light" type="submit">{% if page.language.code == 'en' %}Subscribe{% else %}訂閱{% endif %}</button>
                 </div>
@@ -70,36 +71,8 @@
 .footer_form {
   border: 2px solid white;
   background-color:#6C757D;
-  font-color:#fff;
+  color: white;
 }
 
 
 </style>
-{% comment %} <script>
-function checkWidth(init)
-{
-    /*If browser resized, check width again */
-    if ($(window).width() < 800) {
-      $('#footer_col_01').addClass('col-8');
-			$('#footer_col_02').addClass('col-8');  
-			$('#footer_col_01').removeClass('col-4');
-			$('#footer_col_02').removeClass('col-4');
-      console.log(123);
-    }
-    else {
-      $('#footer_col_01').addClass('col-4');
-			$('#footer_col_02').addClass('col-4');  
-			$('#footer_col_01').removeClass('col-8');
-			$('#footer_col_02').removeClass('col-8');
-    }
-}
-
-$(document).ready(function() {
-    console.log(123);
-    checkWidth();
-    $(window).resize(function() {
-        checkWidth();
-        console.log(456);
-    });
-});
-</script> {% endcomment %}

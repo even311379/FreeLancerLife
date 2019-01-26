@@ -3,6 +3,10 @@
 
 {% block extra_css %}
 <link href="{% static '/blog/css/autumn.css' %}" rel="stylesheet">
+<style>
+
+</style>
+
 {% endblock %}
 
 {% block body_class%}bg-light{% endblock %}
@@ -10,7 +14,7 @@
 <div class='container bg-white'>
     <div class='row'>
         <div class='col-lg-9'>
-            <h1>{{ page.title }}</h1>
+            <h1 style="padding: 2rem 0;">{{ page.title }}</h1>
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <span class="fas fa-calendar-alt"></span> {{page.date|date:"D d M Y"}} &nbsp;
@@ -29,7 +33,7 @@
            
         </div>
 
-        <div class='clo-lg-3 list-group' style ="padding-top:20%;word-wrap: break-word;width: 200px;">
+        <div class='col-lg-3 list-group series_panel'>
         {% if  Series %}        
             <div class="list-group-item active">{{ Series_name }}</div>
         {% for p in Series %}
@@ -45,23 +49,54 @@
         </div>
 
     </div>
-    <hr>
-            <p><a href="{{ page.get_parent.url }}">Return to blog</a></p>
+
     <hr>
     
-    related posts:
-    <div class="d-flex justify-content-between align-items-center" style="padding-left:10%;padding-right:10%;">
-    {% for rp in page.related_links.all %}
-        {% comment %} {% image rp.page.thumbnail max-286x180 as this_thumbnail  %} {% endcomment %}
-        <div class="card" style="width: 14rem;">
-            {% comment %} <img class="card-img-top" src="{{ this_thumbnail.url }}" alt="Card image cap"> {% endcomment %}
-            <div class="card-body">
-            <p class="card-text">{{ rp.page.title }}</p>
+    {% comment %} {% include "request_notebook.html" %} {% endcomment %}
+
+
+
+    <h2> {% if page.language.code == 'zh'%}相關文章：{% else %}Related Articles:{% endif %}</h2>
+    <div class='row'>
+        {% if related_page1 %}
+        <div class="column">
+            <div class="card">
+            {% image related_page1.thumbnail max-300x300 as thumb  %}
+                <img class="card-img-top" src="{{ thumb.url }}" alt="Card image cap" style="background-size: cover">
+                <div class="card-body">
+                    <p class="card-text">
+                    <a href="/{{ page.language.code }}/blog/{{ page.related_page1.slug }}">
+                    {% if related_page1_series_info %}
+                    {{ related_page1_series_info }}: <br>
+                    {% endif %}
+                    {{ related_page1.title }}
+                    </a>
+                    </p>
+                </div>
             </div>
         </div>
-    {% endfor %}
+        {% endif %}
+
+        {% if related_page2 %}
+        <div class="column">
+            <div class="card">
+            {% image related_page2.thumbnail max-300x300 as thumb  %}
+                <img class="card-img-top" src="{{ thumb.url }}" alt="Card image cap" style="background-size: cover">
+                <div class="card-body">
+                    <p class="card-text">
+                    <a href="/{{ page.language.code }}/blog/{{ page.related_page2.slug }}">
+                    {% if related_page2_series_info %}
+                    {{ related_page2_series_info }}: <br>
+                    {% endif %}
+                    {{ related_page2.title }}
+                    </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
-            {% show_comments %}
+    {% show_comments %}
 </div>
 {% endblock %}
 

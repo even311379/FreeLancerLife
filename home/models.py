@@ -95,6 +95,15 @@ class ContactMeData(models.Model):
     def __str__(self):
         return self.name
 
+
+class SubscriberEmail(models.Model):
+    subsciber_email = models.EmailField(max_length=50)
+    receive_time = models.DateTimeField(auto_now=False, auto_now_add=False)
+
+    def __str__(self):
+        return self.subsciber_email
+
+
 class ContactMe(TranslatablePage):
 
     Page = TranslatablePage
@@ -134,6 +143,7 @@ class ContactMe(TranslatablePage):
             context['task_type'] = [i.name for i in task_type.objects.all()]
             context['plan_type'] = [i.name for i in plan_type.objects.all()]
         return context
+
 
 
 class HireMe(TranslatablePage):

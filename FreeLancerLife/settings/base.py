@@ -18,7 +18,6 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 
-
 LANGUAGES = (
     ('en', ("English")),
     ('zh', ("Chinese")),
@@ -66,7 +65,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    "compressor",
 ]
+
 
 # django plotly dash
 # CHANNEL_LAYERS = {
@@ -79,13 +81,13 @@ INSTALLED_APPS = [
 # }
 
 #django-paypal
-PAYPAL_RECEIVER_EMAIL = 'even311379@hotmail.com'
-PAYPAL_TEST = True
+# PAYPAL_RECEIVER_EMAIL = 'even311379@hotmail.com'
+# PAYPAL_TEST = True
 
 # django controlcenter
-CONTROLCENTER_DASHBOARDS = (
-    ('mydash', 'apps.controlcenter_test.MyDashboard'),
-)
+# CONTROLCENTER_DASHBOARDS = (
+#     ('mydash', 'apps.controlcenter_test.MyDashboard'),
+# )
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -209,10 +211,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
+# STATICFILES_FINDERS = [
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#     'compressor.finders.CompressorFinder'
+# ]
+
 
 STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, 'static'),
@@ -221,7 +225,7 @@ STATICFILES_DIRS = [
 # ManifestStaticFilesStorage is recommended in production, to prevent outdated
 # Javascript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
 # See https://docs.djangoproject.com/en/2.1/ref/contrib/staticfiles/#manifeststaticfilesstorage
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
@@ -236,4 +240,6 @@ WAGTAIL_SITE_NAME = "FreeLancerLife"
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
-BASE_URL = 'http://example.com'
+# BASE_URL = 'http://example.com'
+
+

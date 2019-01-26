@@ -1,10 +1,10 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
 {% with blocks=self %}
-<div class='container bg-white' align = center>
+<div class='container bg-white'>
     {% for block in blocks %}
         {% if block.block_type == 'heading' %}
-            <h2>{{ block.value }}</h2>
+            <h2 style='text-align: center'>{{ block.value }}</h2>
         {% elif block.block_type == 'image' %}
             {% image block.value width-500 class="img-responsive" %}
         {% else %}

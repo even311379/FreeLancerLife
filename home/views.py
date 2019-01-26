@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
-from .models import ContactMeData, task_type, plan_type, ContactMe
+from .models import ContactMeData, task_type, plan_type, ContactMe, SubscriberEmail
+
 
 def reply_contact(request):
     if request.method == "POST":
@@ -12,8 +13,9 @@ def reply_contact(request):
         plan = request.POST['plan_type']
         email = request.POST['email']
         language_code = request.POST['language_code']
+
         print(language_code)
-        print(task)
+
         if language_code == 'en':
             new_ContactMeData = ContactMeData.objects.create(
                 name=name,
@@ -34,6 +36,8 @@ def reply_contact(request):
                 email = email,
                 receive_time = timezone.now(),
             )
+        
+        new_ContactMeData.save()
         print('saving date')
         print('maybe direct send me an email??')
         
@@ -42,3 +46,21 @@ def reply_contact(request):
         return HttpResponse(render(request, 'home/reply_contact.html', locals()))
     else:
         return HttpResponse(render(request, 'home/reply_contact.html', locals()))
+        # return HttpResponse('<html><h1>Hey! You should visit this page by post!</h1></html>')
+
+
+def add_subscribe(request):
+    if request.method == "POST":
+        email = request.POST['subscriber_mail']
+        language_code = request.POST['language_code']
+        new_subscriber = SubscriberEmail.objects.create(
+            subsciber_email = email,
+            receive_time = timezone.now(),
+        )
+
+        new_subscriber.save()
+
+        return HttpResponse(render(request, 'home/thank_subscribe.html', locals()))
+
+    else:
+        return HttpResponse('<html><h1>Hey! You should visit this page by post!</h1></html>')

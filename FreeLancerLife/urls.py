@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^search/$', search_views.search, name='search'),
     path('zh/reply_contact', home_views.reply_contact),
     path('en/reply_contact', home_views.reply_contact),
+    path('add_subscribe', home_views.add_subscribe),
     path('test', blog_views.test, name='test'),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
     # path('zh/dash_test', TemplateView.as_view(template_name = 'dash_test.html'), name='dash_test'),
@@ -37,6 +38,8 @@ urlpatterns = [
 ]
 
 
+
+
 if settings.DEBUG:
     from django.conf.urls.static import static
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -44,3 +47,10 @@ if settings.DEBUG:
     # Serve static and media files from development server
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+else:
+    from django.conf.urls.static import static
+    from django.views.static import serve
+    
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += [re_path(r'media/(?P<path>.*)$',serve,{'document_root':settings.MEDIA_ROOT})]

@@ -1,26 +1,47 @@
 {% extends "base.html" %}
 {% load static wagtailcore_tags wagtailimages_tags blogapp_tags wagtailmd%}
 
-{% block title %}{{ self.title }} | {{ blog_page.title }}{% endblock title %}
+{% block title %}{{ self.title }}{% endblock title %}
 {% block meta_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock meta_title %}
 {% block meta_description %}{% if self.search_description %}{{ self.search_description }}{% else %}{{ self.body|striptags|truncatewords:20 }}{% endif %}{% endblock meta_description %}
 {% block extra_css %}
+<link href="{% static '/blog/css/autumn.css' %}" rel="stylesheet">
 
 {% image page.banner max-1900x600 as my_banner  %}
 <style>
 .callout {
-  padding: 6rem 0;
+  padding: 8rem 0;
    background:url('{{ my_banner.url }}');
   {% if not page.tilable_banner %}
   background-repeat: no-repeat;
   background-size: 100% 100%;
   {% endif %}
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
+
+h2 {
+    padding: 2rem 0;
+}
+
+p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+}
+
+@media only screen and (max-width:800px) and (min-width:100px) {
+    .callout {
+        padding: 6rem 0;
+        background-size: cover;
+    }
+}
+
+
 </style>
+
 {% endblock %}
-{% block body_class%}bg-light{% endblock %}
+{% block body_class%}bg-white{% endblock %}
 {% block content %}
-<section class="callout" style="color:{{page.title_color}};">
+<section class="callout " style="color:{{page.title_color}};">
     <div class="container text-center">
        <h3 class="mx-auto md-5">{{ page.title }}</h3>
         <em>
@@ -40,28 +61,115 @@
             </div>
         {% endif %}{% endwith %}
         <br>
-         {% comment %} <a class="btn btn-primary btn-xl js-scroll-trigger" href="#detail">Start</a> {% endcomment %}
 </section>
 
-{% comment %} create buttons for each categories: {% endcomment %}
 
 <div class='container'>
-<section id='detail'>
-{% comment %} {% with blocks=self.body %} {% endcomment %}
+    <div class="row">
+        <div class='col-lg-9'>
+        {% for block in page.body %}
+            {% if block.block_type == 'heading' %}
+                <h2>{{ block.value }}</h2>
+            {% elif block.block_type == 'code' %}
+                
+                {{ block.value |markdown|safe}}
+            {% elif block.block_type == 'image' %}   
+            
+                <a data-fancybox="gallery" href="/media/original_images/{{ block.value }}">
+                    <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
+                </a>
+            
+            {% else %}
+            <div class="block-{{ block.block_type }}">
+                {{ block }}
+            </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+        <div class='col-lg-3 list-group series_panel'>
+            {% if  Series %}        
+                <div class="list-group-item active">{{ Series_name }}</div>
+            {% for p in Series %}
+                <div class="list-group-item list-group-item-action series-item{{ forloop.counter0 }}">
+                    {{ p.title }}
+                    <div class='series-post{{ forloop.counter0 }}' style="display: none;">
+                        <hr>
+                        <div class="row justify-content-center align-items-center "><a href="{{ p.url }}" class='btn btn-info' > GO! </a></div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 
-    {% for block in page.body %}
-        {% if block.block_type == 'heading' %}
-            <h2>{{ block.value }}</h2>
-        {% else %}
-           <section class="block-{{ block.block_type }}">
-               {{ block }}
-           </section>
+    <h2> {% if page.language.code == 'zh'%}相關文章：{% else %}Related Articles:{% endif %}</h2>
+    <div class='row'>
+        {% if related_page1 %}
+        <div class="column">
+            <div class="card">
+            {% image related_page1.thumbnail max-300x300 as thumb  %}
+                <img class="card-img-top" src="{{ thumb.url }}" alt="Card image cap" style="background-size: cover">
+                <div class="card-body">
+                    <p class="card-text">
+                    <a href="/{{ page.language.code }}/blog/{{ page.related_page1.slug }}">
+                    {% if related_page1_series_info %}
+                    {{ related_page1_series_info }}: <br>
+                    {% endif %}
+                    {{ related_page1.title }}
+                    </a>
+                    </p>
+                </div>
+            </div>
+        </div>
         {% endif %}
-    {% endfor %}
 
-<p><a href="/blog">Return to blog</a></p>
-{% show_comments %}
+        {% if related_page2 %}
+        <div class="column">
+            <div class="card">
+            {% image related_page2.thumbnail max-300x300 as thumb  %}
+                <img class="card-img-top" src="{{ thumb.url }}" alt="Card image cap" style="background-size: cover">
+                <div class="card-body">
+                    <p class="card-text">
+                    <a href="/{{ page.language.code }}/blog/{{ page.related_page2.slug }}">
+                    {% if related_page2_series_info %}
+                    {{ related_page2_series_info }}: <br>
+                    {% endif %}
+                    {{ related_page2.title }}
+                    </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% show_comments %}
 </div>
-</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+$('html').click(function(e) {
+{% if  Series %}
+{% for p in Series %}   
+if( !$(e.target).hasClass('series-item{{ forloop.counter0 }}') )
+{   
+    var x = document.getElementsByClassName("series-item{{ forloop.counter0 }}")[0];
+    var xa = document.getElementsByClassName("series-post{{ forloop.counter0 }}")[0]; 
+    x.style.transform = "scale(1.0)";
+    xa.style.display = "none";
+}
+else {
+    var x = document.getElementsByClassName("series-item{{ forloop.counter0 }}")[0];
+    x.style.transform = "scale(1.2)";
+    var xa = document.getElementsByClassName("series-post{{ forloop.counter0 }}")[0]; 
+    xa.style.display = "block";
+}
+{% endfor %}
+{% endif %}
+});    
+</script>
 
 {% endblock %}

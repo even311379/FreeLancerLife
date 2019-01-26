@@ -25,6 +25,10 @@ from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.snippets.models import register_snippet
 
+from wagtail.documents.models import Document
+from wagtail.documents.edit_handlers import DocumentChooserPanel
+
+
 
 from blog.blocks import TwoColumnBlock
 
@@ -256,22 +260,20 @@ class LandingPageRelatedLinks(Orderable, RelatedLink):
 
 '''
 
+class BasePost(TranslatablePage):
 
-class PostPage(TranslatablePage):
     Page = TranslatablePage
-    
     date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)
+    
+    thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
     is_series = models.BooleanField(default=False)
     series_name = models.ForeignKey(Series, on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
     series_id = models.IntegerField(blank=True, unique=False,null=True)
 
     categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
-    
-    body = MarkdownField()
-    thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
-    
+
     related_page1 = models.ForeignKey(
-        'wagtailtrans.TranslatablePage',
+        Page,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -279,20 +281,68 @@ class PostPage(TranslatablePage):
     )
 
     related_page2 = models.ForeignKey(
-        'wagtailtrans.TranslatablePage',
+        Page,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
     )
+    class Meta:
+        abstract = True # this is the key !
 
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        if self.is_series:
+            all_post = []
+            all_post += PostPage.objects.live()
+            all_post += LandingPage.objects.live()
+            S = [p for p in all_post if (p.language == self.language) and (p.series_name == self.series_name)]
+            context['Series'] = sorted(S, key=lambda x:x.series_id)
+            if self.related_page1:
+                RP1 = [p for p in all_post if p.title == str(self.related_page1) ][0]
+                context['related_page1'] = RP1
+                if RP1.is_series:
+                    if self.language.code == 'zh':
+                        context['related_page1_series_info'] = str(RP1.series_name.name) + '(' + str(RP1.series_id) + ')'
+                    else:
+                        context['related_page1_series_info'] = str(RP1.series_name.name_en) + '(' + str(RP1.series_id) + ')'
+
+            if self.related_page2:    
+                RP2 = [p for p in all_post if p.title == str(self.related_page2) ][0]
+                context['related_page2'] = RP2
+                if RP2.is_series:
+                    if self.language.code == 'zh':
+                        context['related_page2_series_info'] = str(RP2.series_name.name) + '(' + str(RP2.series_id) + ')'
+                    else:
+                        context['related_page2_series_info'] = str(RP2.series_name.name_en) + '(' + str(RP2.series_id) + ')'
+            if self.language.code == 'zh':
+                context['Series_name'] = self.series_name
+            else:
+                context['Series_name'] = self.series_name.name_en
+        return context
+
+
+
+class PostPage(BasePost):
+
+    Page = TranslatablePage   
+    body = MarkdownField()
+    
+    notebook_file = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     content_panels = Page.content_panels + [
         ImageChooserPanel('thumbnail'),
         MarkdownPanel('body'),
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
-        PageChooserPanel('related_page1', ['blog.PostPage','blog.LandingPage']),
-        PageChooserPanel('related_page2', ['blog.PostPage','blog.LandingPage']),
+        DocumentChooserPanel('notebook_file'),
+        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage']),
     ]
 
     settings_panels = Page.settings_panels + [
@@ -315,7 +365,8 @@ class PostPage(TranslatablePage):
             all_post = []
             all_post += PostPage.objects.live()
             all_post += LandingPage.objects.live()
-            context['Series'] = [p for p in all_post if (p.language == self.language) and (p.series_name == self.series_name)]
+            S = [p for p in all_post if (p.language == self.language) and (p.series_name == self.series_name)]
+            context['Series'] = sorted(S, key=lambda x:x.series_id)
             if self.language.code == 'zh':
                 context['Series_name'] = self.series_name
             else:
@@ -324,45 +375,24 @@ class PostPage(TranslatablePage):
  
 
 
-class LandingPage(TranslatablePage): # a special type of post page (I intend to use it for game devlog)
+class LandingPage(BasePost): # a special type of post page (I intend to use it for game devlog)
+
     Page = TranslatablePage
-
-    date = models.DateTimeField(verbose_name="Post date", default=datetime.datetime.today)
     project_overview = models.BooleanField(default=False)
-    thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
-    is_series = models.BooleanField(default=False)
-    series_name = models.ForeignKey(Series, on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
-    series_id = models.IntegerField(blank=True, unique=False,null=True)
-
     banner = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
-    title_color = ColorField(default='#FF0000') 
+    title_color = ColorField(default='#FFFFFF') 
     tilable_banner = models.BooleanField(default=False)
-
-    categories = ParentalManyToManyField('blog.BlogCategory', blank=True)
     intro = models.CharField(max_length=255, blank=True,)
+
     body = StreamField([
         ('heading',blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
+        ('code',blocks.TextBlock(classname="full title")),
         ('image', ImageChooserBlock(icon="image")),
         ('two_columns', TwoColumnBlock()),
         ('embedded_video', EmbedBlock(icon="media")),
     ],null=True,blank=True)
 
-    related_page1 = models.ForeignKey(
-        'wagtailtrans.TranslatablePage',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
-
-    related_page2 = models.ForeignKey(
-        'wagtailtrans.TranslatablePage',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([
@@ -373,8 +403,8 @@ class LandingPage(TranslatablePage): # a special type of post page (I intend to 
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
         FieldPanel('intro'),
         StreamFieldPanel('body'),
-        PageChooserPanel('related_page1', ['blog.PostPage','blog.LandingPage']),
-        PageChooserPanel('related_page2', ['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage']),
         # InlinePanel('related_links', label="Related Links"),
     ]
     settings_panels = Page.settings_panels + [
@@ -385,5 +415,16 @@ class LandingPage(TranslatablePage): # a special type of post page (I intend to 
             FieldPanel('series_name'),
             FieldPanel('series_id')],
         heading='SeriesSetting',classname="collapsible collapsed"),
-    ]        
+    ]
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+
+        return context
+         
+
+
+
+
+
 
