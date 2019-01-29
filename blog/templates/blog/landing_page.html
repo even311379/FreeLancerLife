@@ -78,7 +78,10 @@ p {
                 <a data-fancybox="gallery" href="/media/original_images/{{ block.value }}">
                     <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
                 </a>
-            
+            {% elif block.block_type == 'code_output' %}
+
+                <div class='code_output'><xmp>{{ block }}</xmp></div>
+
             {% else %}
             <div class="block-{{ block.block_type }}">
                 {{ block }}
@@ -101,7 +104,7 @@ p {
             {% endif %}
         </div>
     </div>
-
+    {% if related_page1 or related_page2 %}
     <h2> {% if page.language.code == 'zh'%}相關文章：{% else %}Related Articles:{% endif %}</h2>
     <div class='row'>
         {% if related_page1 %}
@@ -142,7 +145,8 @@ p {
         </div>
         {% endif %}
     </div>
-
+    {% endif %}
+    
     {% show_comments %}
 </div>
 

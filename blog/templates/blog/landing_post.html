@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% load static wagtailroutablepage_tags wagtailimages_tags blogapp_tags wagtailmd%}
+{% load static wagtailcore_tags wagtailimages_tags blogapp_tags wagtailmd%}
+
+{% block title %}{{ self.title }}{% endblock title %}
+{% block meta_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock meta_title %}
+
 
 {% block extra_css %}
 <link href="{% static '/blog/css/autumn.css' %}" rel="stylesheet">
@@ -34,34 +38,41 @@ p {
                     {% endfor %}
                 </div>
             </div>
+
             <hr>
-            {{ page.body|markdown|safe }}
+            {% for block in page.body %}
+            {% if block.block_type == 'heading' %}
+                <h2>{{ block.value }}</h2>
+            {% elif block.block_type == 'image' %}   
+                <a data-fancybox="gallery" href="/media/original_images/{{ block.value }}">
+                    <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
+                </a>
+            {% elif block.block_type == 'code_output' %}
+                <div class='code_output'><xmp>{{ block }}</xmp></div>
+            {% else %}
+            <div class="block-{{ block.block_type }}">
+                {{ block }}
+            </div>
+            {% endif %}
+            {% endfor %}
            
         </div>
-
         <div class='col-lg-3 list-group series_panel'>
-        {% if  Series %}        
-            <div class="list-group-item active">{{ Series_name }}</div>
-        {% for p in Series %}
-            <div class="list-group-item list-group-item-action series-item{{ forloop.counter0 }}">
-                {{ p.title }}
-                <div class='series-post{{ forloop.counter0 }}' style="display: none;">
-                    <hr>
-                    <div class="row justify-content-center align-items-center "><a href="{{ p.url }}" class='btn btn-info' > GO! </a></div>
+            {% if  Series %}        
+                <div class="list-group-item active">{{ Series_name }}</div>
+            {% for p in Series %}
+                <div class="list-group-item list-group-item-action series-item{{ forloop.counter0 }}">
+                    {{ p.title }}
+                    <div class='series-post{{ forloop.counter0 }}' style="display: none;">
+                        <hr>
+                        <div class="row justify-content-center align-items-center "><a href="{{ p.url }}" class='btn btn-info' > GO! </a></div>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
-        {% endif %}
+            {% endfor %}
+            {% endif %}
         </div>
-
     </div>
-
-    <hr>
-    
-    {% comment %} {% include "request_notebook.html" %} {% endcomment %}
-
-
-
+    {% if related_page1 or related_page2 %}
     <h2> {% if page.language.code == 'zh'%}相關文章：{% else %}Related Articles:{% endif %}</h2>
     <div class='row'>
         {% if related_page1 %}
@@ -102,25 +113,14 @@ p {
         </div>
         {% endif %}
     </div>
+    {% endif %}
+
     {% show_comments %}
 </div>
+
 {% endblock %}
 
-{% block extra_js%}
-<script type="text/x-mathjax-config">
-            MathJax.Hub.Config({
-              extensions: ["tex2jax.js"],
-              jax: ["input/TeX", "output/HTML-CSS"],
-              tex2jax: {
-                inlineMath: [['$','$']],
-                displayMath: [['$$','$$']] ,
-                processEscapes: true
-              },
-              "HTML-CSS": { availableFonts: ["TeX"] }
-            });
-</script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>          
-
+{% block extra_js %}
 
 <script>
 $('html').click(function(e) {
@@ -142,7 +142,6 @@ else {
 {% endfor %}
 {% endif %}
 });    
-
-
 </script>
+
 {% endblock %}

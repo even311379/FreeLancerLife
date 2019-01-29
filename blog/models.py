@@ -38,7 +38,7 @@ from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from wagtailmd.utils import MarkdownField, MarkdownPanel
 
 from wagtailtrans.models import TranslatablePage
-
+from wagtailcodeblock.blocks import CodeBlock
 # Create your models here.
 
 @register_snippet
@@ -152,9 +152,11 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
         if sibling:
             all_post += PostPage.objects.sibling_of(self).live()
             all_post += LandingPage.objects.sibling_of(self).live()
+            all_post += LandingPost.objects.sibling_of(self).live()
         else:
             all_post += PostPage.objects.descendant_of(self).live()
             all_post += LandingPage.objects.descendant_of(self).live()
+            all_post += LandingPost.objects.descendant_of(self).live()
         return all_post
 
     def get_recent_posts(self, n = 10):
@@ -296,6 +298,7 @@ class BasePost(TranslatablePage):
             all_post = []
             all_post += PostPage.objects.live()
             all_post += LandingPage.objects.live()
+            all_post += LandingPost.objects.live()
             S = [p for p in all_post if (p.language == self.language) and (p.series_name == self.series_name)]
             context['Series'] = sorted(S, key=lambda x:x.series_id)
             if self.related_page1:
@@ -327,22 +330,13 @@ class PostPage(BasePost):
 
     Page = TranslatablePage   
     body = MarkdownField()
-    
-    notebook_file = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
 
     content_panels = Page.content_panels + [
         ImageChooserPanel('thumbnail'),
         MarkdownPanel('body'),
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
-        DocumentChooserPanel('notebook_file'),
-        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage']),
-        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage','blog.LandingPost']),
+        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage','blog.LandingPost']),
     ]
 
     settings_panels = Page.settings_panels + [
@@ -361,16 +355,6 @@ class PostPage(BasePost):
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
         context['blog_index'] = self.blog_index
-        if self.is_series:
-            all_post = []
-            all_post += PostPage.objects.live()
-            all_post += LandingPage.objects.live()
-            S = [p for p in all_post if (p.language == self.language) and (p.series_name == self.series_name)]
-            context['Series'] = sorted(S, key=lambda x:x.series_id)
-            if self.language.code == 'zh':
-                context['Series_name'] = self.series_name
-            else:
-                context['Series_name'] = self.series_name.name_en
         return context
  
 
@@ -387,7 +371,8 @@ class LandingPage(BasePost): # a special type of post page (I intend to use it f
     body = StreamField([
         ('heading',blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
-        ('code',blocks.TextBlock(classname="full title")),
+        ('code',blocks.TextBlock()),
+        ('code_output',blocks.TextBlock()),
         ('image', ImageChooserBlock(icon="image")),
         ('two_columns', TwoColumnBlock()),
         ('embedded_video', EmbedBlock(icon="media")),
@@ -403,8 +388,8 @@ class LandingPage(BasePost): # a special type of post page (I intend to use it f
         FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
         FieldPanel('intro'),
         StreamFieldPanel('body'),
-        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage']),
-        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage']),
+        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage','blog.LandingPost']),
+        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage','blog.LandingPost']),
         # InlinePanel('related_links', label="Related Links"),
     ]
     settings_panels = Page.settings_panels + [
@@ -419,12 +404,35 @@ class LandingPage(BasePost): # a special type of post page (I intend to use it f
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-
         return context
          
 
+class LandingPost(BasePost):
+    Page = TranslatablePage
+    body = StreamField([
+        ('heading',blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('wag_code',CodeBlock(label='Code')),
+        ('code_output',blocks.TextBlock()),
+        ('image', ImageChooserBlock(icon="image")),
+    ],null=True,blank=True)
 
-
-
+    content_panels = Page.content_panels + [
+        FieldPanel('categories', widget=forms.CheckboxSelectMultiple),
+        StreamFieldPanel('body'),
+        PageChooserPanel('related_page1',['blog.PostPage','blog.LandingPage','blog.LandingPost']),
+        PageChooserPanel('related_page2',['blog.PostPage','blog.LandingPage','blog.LandingPost']),
+    ]
+    settings_panels = Page.settings_panels + [
+        FieldPanel('date'),ImageChooserPanel('thumbnail'),
+        MultiFieldPanel([
+            FieldPanel('is_series'),
+            FieldPanel('series_name'),
+            FieldPanel('series_id')],
+        heading='SeriesSetting',classname="collapsible collapsed"),
+    ]
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        return context
 
 

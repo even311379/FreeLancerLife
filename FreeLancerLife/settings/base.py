@@ -23,6 +23,8 @@ LANGUAGES = (
     ('zh', ("Chinese")),
 )
 
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'wagtailmenus',
 
     'wagtailtrans', # wagtail third party
+    "wagtailcodeblock",
 
     'modelcluster', # django third party
     'taggit',
@@ -66,28 +69,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    "compressor",
+    
 ]
 
 
-# django plotly dash
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             'hosts': [('127.0.0.1', 6379),],
-#         },
-#     },
-# }
 
 #django-paypal
 # PAYPAL_RECEIVER_EMAIL = 'even311379@hotmail.com'
 # PAYPAL_TEST = True
 
-# django controlcenter
-# CONTROLCENTER_DASHBOARDS = (
-#     ('mydash', 'apps.controlcenter_test.MyDashboard'),
-# )
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -211,11 +201,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-# STATICFILES_FINDERS = [
-#     'django.contrib.staticfiles.finders.FileSystemFinder',
-#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#     'compressor.finders.CompressorFinder'
-# ]
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
 
 STATICFILES_DIRS = [
@@ -243,3 +232,19 @@ WAGTAIL_SITE_NAME = "FreeLancerLife"
 # BASE_URL = 'http://example.com'
 
 
+WAGTAIL_CODE_BLOCK_THEME = ''
+# available themes which are good to me: ''(default), 'okaidia', 'solarizedlight' 
+
+WAGTAIL_CODE_BLOCK_LANGUAGES = (
+    ('python', 'Python'),
+    ('bash', 'Bash'),
+    ('brainfuck', 'Brainfuck'),
+    ('csharp', 'C#'),
+    ('cpp', 'C++'),
+    ('css', 'CSS'),
+    ('django', 'Django/Jinja2'),
+    ('http', 'HTTP'),
+    ('java', 'Java'),
+    ('javascript', 'JavaScript'),
+    ('json', 'JSON'),
+)
