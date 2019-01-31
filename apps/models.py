@@ -1,13 +1,16 @@
 from django.db import models
 
 from wagtail.core.models import Page
-from wagtail.core.fields import RichTextField
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, StreamFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from blog import models as blog_model
 
 from wagtailtrans.models import TranslatablePage
 from wagtailmd.utils import MarkdownField, MarkdownPanel
+
+from wagtail.core import blocks
 # Create your models here.
 
 class AppIndex(TranslatablePage):
@@ -29,19 +32,31 @@ class AppPost(TranslatablePage):
     Page = TranslatablePage
     app_name = models.CharField(max_length=80,blank=True)
     app_thumbnail = models.ForeignKey('wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', blank=True, null=True)
-    app_description = MarkdownField(blank=True)
-    component_name = models.CharField(max_length=80,blank=True)
-    # app_custom_htmlcode = MarkdownField(blank=True)
+    body_before_app = StreamField([
+        ('heading',blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock(icon="image")),
+        ('custom_html', blocks.TextBlock(icon='plus-inverse')),
+    ],null=True,blank=True)
+    body_after_app = StreamField([
+        ('heading',blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock(icon="image")),
+        ('custom_html', blocks.TextBlock(icon='plus-inverse')),
+    ],null=True,blank=True)
 
     is_dash_app = models.BooleanField(default=False)
+    dash_ratio = models.FloatField(default=0.5, 
+    help_text = 'The ratio of height to width.  Will inherit its width as 100\% of its parent, then set height')
 
     content_panels = Page.content_panels + [
         FieldPanel('app_name'),
         ImageChooserPanel('app_thumbnail'),
-        MarkdownPanel('app_description'),
-        FieldPanel('component_name'),
+        StreamFieldPanel('body_before_app'),
+        StreamFieldPanel('body_after_app'),
     ]
 
     settings_panels = Page.settings_panels + [
-        FieldPanel('is_dash_app')
+        FieldPanel('is_dash_app'),
+        FieldPanel('dash_ratio')
     ]

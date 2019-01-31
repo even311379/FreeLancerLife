@@ -376,6 +376,7 @@ class LandingPage(BasePost): # a special type of post page (I intend to use it f
         ('image', ImageChooserBlock(icon="image")),
         ('two_columns', TwoColumnBlock()),
         ('embedded_video', EmbedBlock(icon="media")),
+        ('custom_html', blocks.TextBlock(icon='plus-inverse')),
     ],null=True,blank=True)
 
 
@@ -412,9 +413,10 @@ class LandingPost(BasePost):
     body = StreamField([
         ('heading',blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
-        ('wag_code',CodeBlock(label='Code')),
+        ('code',CodeBlock(label='Code')),
         ('code_output',blocks.TextBlock()),
         ('image', ImageChooserBlock(icon="image")),
+        ('custom_html', blocks.TextBlock(icon='plus-inverse')),
     ],null=True,blank=True)
 
     content_panels = Page.content_panels + [

@@ -243,7 +243,7 @@ WAGTAIL_CODE_BLOCK_LANGUAGES = (
     ('cpp', 'C++'),
     ('css', 'CSS'),
     ('django', 'Django/Jinja2'),
-    ('http', 'HTTP'),
+    ('html', 'HTML'),
     ('java', 'Java'),
     ('javascript', 'JavaScript'),
     ('json', 'JSON'),

@@ -15,6 +15,9 @@ p {
     font-size: 1.25rem;
     line-height: 1.6;
 }
+h2 {
+    padding: 2rem 0;
+}
 </style>
 
 {% endblock %}
@@ -49,6 +52,8 @@ p {
                 </a>
             {% elif block.block_type == 'code_output' %}
                 <div class='code_output'><xmp>{{ block }}</xmp></div>
+            {% elif block.block_type == 'custom_html' %}
+                {{ block |safe }}
             {% else %}
             <div class="block-{{ block.block_type }}">
                 {{ block }}
@@ -73,6 +78,7 @@ p {
         </div>
     </div>
     {% if related_page1 or related_page2 %}
+    <hr>
     <h2> {% if page.language.code == 'zh'%}相關文章：{% else %}Related Articles:{% endif %}</h2>
     <div class='row'>
         {% if related_page1 %}

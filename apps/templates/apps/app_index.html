@@ -29,8 +29,8 @@
     <section class="content-section" id="posts_region">
       <div class="container">
         <div class="content-section-heading text-center">
-          <h3 class="text-secondary mb-0">{% if page.language.code == 'en' %}PORFOLIO{% else %}作品集{% endif %}</h3>
-          <h2 class="mb-5">{% if page.language.code == 'en' %}Recent Projects{% else %}近期專案{% endif %}</h2>
+          <h3 class="text-secondary mb-5">{% if page.language.code == 'en' %}My APP list{% else %}我的APP清單{% endif %}</h3>
+          <!-- <h2 class="mb-5">{% if page.language.code == 'en' %}Recent Projects{% else %}近期專案{% endif %}</h2> -->
         </div>
         <div class="row">
           {% for app in app_posts %}
@@ -47,34 +47,7 @@
             </a>
           </div>
           {% endfor %}
-                    {% for app in app_posts %}
-          <div class="col-lg-4 px-2">
-            <a class="portfolio-item mb-4" href="/{{ page.language.code }}/app/{{app.slug}}">
-              <span class="caption">
-                <span class="caption-content">
-                  <h2>{{ app.title }}</h2>
-                  {% comment %} <p class="mb-0">{{ app.app_description |truncatechars:100|safe }}</p> {% endcomment %}
-                </span>
-              </span>
-              {% image app.app_thumbnail max-700x647 as my_image  %}
-              <img class="img-fluid" src="{{ my_image.url }}" alt="">
-            </a>
-          </div>
-          {% endfor %}
-                    {% for app in app_posts %}
-          <div class="col-lg-4 px-2">
-            <a class="portfolio-item mb-4" href="/{{ page.language.code }}/app/{{app.slug}}">
-              <span class="caption">
-                <span class="caption-content">
-                  <h2>{{ app.title }}</h2>
-                  {% comment %} <p class="mb-0">{{ app.app_description |truncatechars:100|safe }}</p> {% endcomment %}
-                </span>
-              </span>
-              {% image app.app_thumbnail max-700x647 as my_image  %}
-              <img class="img-fluid" src="{{ my_image.url }}" alt="">
-            </a>
-          </div>
-          {% endfor %}
+         
         </div>
       </div>
     </section>

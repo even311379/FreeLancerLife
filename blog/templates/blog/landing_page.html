@@ -70,18 +70,16 @@ p {
         {% for block in page.body %}
             {% if block.block_type == 'heading' %}
                 <h2>{{ block.value }}</h2>
-            {% elif block.block_type == 'code' %}
-                
-                {{ block.value |markdown|safe}}
-            {% elif block.block_type == 'image' %}   
-            
+            {% elif block.block_type == 'code' %}                
+                {{ block.value |markdown|safe }}
+            {% elif block.block_type == 'image' %}               
                 <a data-fancybox="gallery" href="/media/original_images/{{ block.value }}">
                     <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
                 </a>
             {% elif block.block_type == 'code_output' %}
-
                 <div class='code_output'><xmp>{{ block }}</xmp></div>
-
+            {% elif block.block_type == 'custom_html' %}
+                {{ block |safe }}
             {% else %}
             <div class="block-{{ block.block_type }}">
                 {{ block }}
@@ -105,6 +103,7 @@ p {
         </div>
     </div>
     {% if related_page1 or related_page2 %}
+    <hr>
     <h2> {% if page.language.code == 'zh'%}相關文章：{% else %}Related Articles:{% endif %}</h2>
     <div class='row'>
         {% if related_page1 %}

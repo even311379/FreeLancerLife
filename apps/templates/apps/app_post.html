@@ -13,18 +13,40 @@ iframe {
 {% block content %}
 <div class='container bg-light'>
 <h1>{{ page.app_name }}</h1>
-<p>A bunch of help text will shown here
-A bunch of help text will shown here
-A bunch of help text will shown hereA bunch of help text will shown here
-A bunch of help text will shown hereA bunch of help text will shown hereA bunch of help text will shown here
-A bunch of help text will shown here</p>
-{{ page.app_description |markdown|safe }}
+{% for block in page.body_before_app %}
+    {% if block.block_type == 'heading' %}
+        <h2>{{ block.value }}</h2>
+    {% elif block.block_type == 'image' %}               
+        <a data-fancybox="gallery" href="/media/original_images/{{ block.value }}">
+            <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
+        </a>
+    {% elif block.block_type == 'custom_html' %}
+        {{ block |safe }}
+    {% else %}
+        <div class="block-{{ block.block_type }}">
+            {{ block }}
+        </div>
+    {% endif %}
+{% endfor %}
 
 {% if page.is_dash_app %}
-{% plotly_app name=page.app_name ratio=0.5 %}
+    {% plotly_app name=page.app_name ratio=page.dash_ratio %}
 {% endif %}
-{% comment %} </div>
-<div class="container bg-primary"> {% endcomment %}
+{% for block in page.body_after_app %}
+    {% if block.block_type == 'heading' %}
+    <h2>{{ block.value }}</h2>
+    {% elif block.block_type == 'image' %}               
+    <a data-fancybox="gallery" href="/media/original_images/{{ block.value }}">
+        <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
+    </a>
+    {% elif block.block_type == 'custom_html' %}
+        {{ block |safe }}
+    {% else %}
+    <div class="block-{{ block.block_type }}">
+        {{ block }}
+    </div>
+    {% endif %}
+{% endfor %}
 {% show_comments %}
 </div>
 {% if page.component_name %}
