@@ -23,6 +23,7 @@ from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          PageChooserPanel, StreamFieldPanel)
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
+from wagtail.contrib.table_block.blocks import TableBlock
 from wagtail.snippets.models import register_snippet
 
 from wagtail.documents.models import Document
@@ -127,6 +128,7 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
                 if request.POST.get(cat.name):
                     cats.append(cat.name)
             
+            context['cats'] = cats
             self.searched_categories = BlogCategory.objects.filter(name__in=cats)        
             for post in all_post:
                 for c in post.categories.all():
@@ -134,16 +136,29 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
                         self.posts_this_page.append(post)
                         break
                         
-        context['posts_this_page'] = self.posts_this_page
-        context['p'] = self.p
-        # context['blog_index'] = self
+        paginator = Paginator(self.posts_this_page, 5)
+        p = request.GET.get('p', None)
+        if not p:
+            p = 1
+        try:
+            posts_to_show = paginator.page(p)
+        except PageNotAnInteger:
+            p = 1
+            posts_to_show = paginator.page(p)
+        except EmptyPage:
+            p = paginator.num_pages
+            posts_to_show = paginator.page(p)
+
+        my_paginator = paginator.get_page(p)
+        context['p'] = p
+        context['posts_this_page'] = posts_to_show
+        context['my_paginator'] = my_paginator
         context['help_text'] = self.help_text
         context['present_method'] = self.present_method
         context['searched_categories'] = self.searched_categories
         context['keyword'] = self.keyword
         context['categories'] = BlogCategory.objects.all()
         context['n_category_left'] = len(BlogCategory.objects.all()) % 3
-        print(self.language.code)
         return context
 
    
@@ -173,10 +188,9 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
                 if p.date == d:
                     reordered_all_post.append(p)
                     break
-        return reordered_all_post[0:10]
+        return reordered_all_post[0:n]
 
     @route(r'^category/(?P<category>[-\w]+)/$')
-    # @route(r'^category$')
     def post_by_category(self, request, category, *args, **kwargs):
         print('route post_by_category is called!!')
         if self.language.code == 'en':
@@ -215,21 +229,7 @@ class BlogIndex(RoutablePageMixin, TranslatablePage):
         else:
             self.help_text = '近期文章：'
         all_post = self.get_recent_posts(999)
-        paginator = Paginator(all_post, 20)
-        p = request.GET.get('p')
-        if not p:
-            p = 1
-        try:
-            posts_this_page = paginator.page(p)
-        except PageNotAnInteger:
-            p = 1
-            posts_this_page = paginator.page(p)
-        except EmptyPage:
-            p = paginator.num_pages
-            posts_this_page = paginator.page(p)
-
-        self.posts_this_page = posts_this_page
-        self.p = p
+        self.posts_this_page = all_post
         return Page.serve(self, request, *args, **kwargs)
 
 '''
@@ -416,6 +416,7 @@ class LandingPost(BasePost):
         ('code',CodeBlock(label='Code')),
         ('code_output',blocks.TextBlock()),
         ('image', ImageChooserBlock(icon="image")),
+        ('table',TableBlock(icon="form",template='blog/blocks/table_template.html')),
         ('custom_html', blocks.TextBlock(icon='plus-inverse')),
     ],null=True,blank=True)
 

@@ -51,9 +51,13 @@ h2 {
                     <img class="responsive-image center" src="/media/original_images/{{ block.value }}">
                 </a>
             {% elif block.block_type == 'code_output' %}
-                <div class='code_output'><xmp>{{ block }}</xmp></div>
+                <div class='code_output'>{{ block|linebreaks }}</div>
             {% elif block.block_type == 'custom_html' %}
                 {{ block |safe }}
+            {% elif block.block_type == 'table' %}
+                <div class='block-table'>
+                    {{ block }}
+                </div>
             {% else %}
             <div class="block-{{ block.block_type }}">
                 {{ block }}

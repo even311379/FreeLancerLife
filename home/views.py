@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.utils import timezone
 from .models import ContactMeData, task_type, plan_type, ContactMe, SubscriberEmail
 
+from django.template.loader import get_template
+from django.core.mail import send_mail, EmailMessage
 
 def reply_contact(request):
     if request.method == "POST":
@@ -39,7 +41,28 @@ def reply_contact(request):
         
         new_ContactMeData.save()
         print('saving date')
-        print('maybe direct send me an email??')
+        # print('maybe direct send me an email??')
+
+        # mail_template = get_template('home/email_template.html')
+        # mail_content = mail_template.render(locals())
+        # subject = '感謝您預定湖頂麒麟潭農場民宿'
+        
+        msg_body = '{0} from {1} ({5}) ask me a {4} job about {2} with due date around {3}'.format(name, organization, task, due_date, plan, email)
+
+        # msg = EmailMessage(subject,mail_content,'even311379@hotmail.com', ['even311379@hotmail.com'])
+        # msg.content_subtype = 'html'
+        try:
+            # msg.send()
+            send_mail(
+                'My job is comming?',
+                msg_body,
+                'even311379@gmail.com',
+                ['even311379@hotmail.com'],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(e)
+            print('Fail to send email!!~~')
         
         page = [p for p in ContactMe.objects.all() if p.language.code == language_code][0]
 

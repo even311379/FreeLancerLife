@@ -42,8 +42,8 @@
             <a class="portfolio-item" href="{{ project.url }}">
               <span class="caption">
                 <span class="caption-content">
-                  <h2>{{ project.title }}</h2>
-                  <p class="mb-0">{{ project.intro }}</p>
+                  <h3>{{ project.intro }}</h3>
+                  {% comment %} <p class="mb-0">{{ project.intro }}</p> {% endcomment %}
                 </span>
               </span>
               {% image project.thumbnail max-700x647 as my_image  %}

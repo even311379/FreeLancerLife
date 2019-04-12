@@ -30,7 +30,15 @@ width: 50%;
 
 /* for stream page */
 .block-paragraph {
-    padding: 0 0 0 3rem;
+    padding: 1rem 0 1rem 3rem;
+}
+
+.block-table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    padding: 1rem 0 1rem 3rem;
 }
 
 /* .block-paragraph p {
@@ -68,6 +76,10 @@ width: 50%;
 
 
 /* for code output sections */
+
+.code_output p {
+    font-size: 0.8rem;
+}
 
 .code_output {
     border: none;
@@ -126,3 +138,43 @@ width: 50%;
   }
 }
 
+/* unvisited link */
+.content-section a:link {
+    color: #fffa67;
+}
+  
+/* visited link */
+.content-section a:visited {
+    color: #ffcd60;
+}
+
+/* mouse over link */
+.content-section a:hover {
+    color: hotpink;
+}
+
+/* selected link */
+.content-section a:active {
+    color: #bc2525;
+}
+
+/* for custom pagination colors */
+.page-link {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: rgb(211, 192, 23);
+    background-color: #feffdb;
+    border: 1px solid #fccb8f;
+  }
+   
+   
+  .page-item.active .page-link,
+  .page-link:focus, .page-link:hover {
+    z-index: 1;
+    color: #fff;
+    background-color: #faf096;
+    border-color: #ffc60b;
+  }

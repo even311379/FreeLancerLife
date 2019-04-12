@@ -72,3 +72,16 @@ def create_geojson(point_list,fish_name):
     with open(os.getcwd()+'/media/documents/{}.json'.format(fish_name), 'w') as f:
         f.write(base_text)
 
+def parse_my_geoj(geoj_filename):
+    with open(geoj_filename) as jfile:
+        j = json.load(jfile)
+    
+    name = [j['features'][i]['properties']['name'] for i in range(len(j['features']))]
+    coords = [j['features'][i]['geometry']['coordinates'] for i in range(len(j['features']))]
+    # since it's so small scale, I can ignore the projection issue to calculate centroid?
+    # cents = [(np.array(p[0])[:,0].mean(),np.array(p[0])[:,1].mean()) for p in coords]
+    clats = [np.array(p[0])[:,1].mean() for p in coords]
+    clons = [np.array(p[0])[:,0].mean() for p in coords]
+    return [name, clats, clons]
+
+

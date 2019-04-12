@@ -14,7 +14,7 @@ from home import views as home_views
 
 from django.views.generic import TemplateView
 
-from apps  import dash_test, fish_map
+from apps  import dash_test, fish_map, table_demo, map_anim_demo, map_demo
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),

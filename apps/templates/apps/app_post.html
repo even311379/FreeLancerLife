@@ -1,14 +1,11 @@
 {% extends "base.html" %}
 {% load plotly_dash static wagtailcore_tags wagtailimages_tags wagtailmd blogapp_tags %}
 
+{% plotly_header %}
 {% block extra_css %}
-<style>
-iframe {
-    height:600px;
-    display: block;
-}
-</style>
+<link rel="stylesheet" href="{% static 'apps/css/dash_apps.css'%}">
 {% endblock %}
+
 
 {% block content %}
 <div class='container bg-light'>
@@ -30,7 +27,8 @@ iframe {
 {% endfor %}
 
 {% if page.is_dash_app %}
-    {% plotly_app name=page.app_name ratio=page.dash_ratio %}
+    {% comment %} {% plotly_app name=page.app_name ratio=page.dash_ratio %} {% endcomment %}
+    {% plotly_direct name=page.app_name %}
 {% endif %}
 {% for block in page.body_after_app %}
     {% if block.block_type == 'heading' %}
@@ -47,6 +45,10 @@ iframe {
     </div>
     {% endif %}
 {% endfor %}
+
+{% plotly_footer %}
+<br>
+<br>
 {% show_comments %}
 </div>
 {% if page.component_name %}

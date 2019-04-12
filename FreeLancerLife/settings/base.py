@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.routable_page",
     'wagtail.contrib.modeladmin',
     'wagtailmenus',
+    "wagtail.contrib.table_block",
 
     'wagtailtrans', # wagtail third party
     "wagtailcodeblock",
@@ -89,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django_plotly_dash.middleware.BaseMiddleware',
 
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 
@@ -248,3 +250,10 @@ WAGTAIL_CODE_BLOCK_LANGUAGES = (
     ('javascript', 'JavaScript'),
     ('json', 'JSON'),
 )
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = MIF.MyGmailAccount()
+EMAIL_HOST_PASSWORD = MIF.MyGmailPassword()
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
