@@ -40,7 +40,7 @@ traitlets==4.3.2
 typed-ast==1.1.1
 Unidecode==1.0.23
 urllib3==1.24.1
-wagtail==2.4
+wagtail==2.11.6
 wagtailmenus==2.12
 wagtailtrans==2.0.4
 wcwidth==0.1.7
