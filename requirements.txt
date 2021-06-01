@@ -39,7 +39,7 @@ six==1.12.0
 traitlets==4.3.2
 typed-ast==1.1.1
 Unidecode==1.0.23
-urllib3==1.24.1
+urllib3==1.26.5
 wagtail==2.4
 wagtailmenus==2.12
 wagtailtrans==2.0.4
